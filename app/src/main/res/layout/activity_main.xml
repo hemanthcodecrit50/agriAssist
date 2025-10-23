@@ -12,28 +12,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingLeft="16dp"
+        android:paddingTop="25dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="20dp">
 
         <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="24dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="24dp">
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_app_logo"
-                android:contentDescription="@string/app_logo" />
+                android:contentDescription="@string/app_logo"
+                android:src="@drawable/ic_app_logo" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="12dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -55,9 +58,9 @@
                 android:id="@+id/profileButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_profile"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/profile" />
+                android:contentDescription="@string/profile"
+                android:src="@drawable/ic_profile" />
         </LinearLayout>
 
         <!-- Ask Question Button -->
@@ -65,35 +68,35 @@
             android:id="@+id/askQuestionButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="@string/ask_question"
-            android:textColor="#1A1A1A"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
             android:backgroundTint="#00D66C"
             android:drawableStart="@drawable/ic_microphone"
             android:drawablePadding="8dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:cornerRadius="12dp"
-            android:layout_marginBottom="24dp" />
+            android:text="@string/ask_question"
+            android:textColor="#1A1A1A"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
 
         <!-- Quick Access Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="@string/quick_access"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold" />
 
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="2"
+            android:layout_marginBottom="24dp"
             android:alignmentMode="alignMargins"
-            android:layout_marginBottom="24dp">
+            android:columnCount="2"
+            android:rowCount="2">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/weatherCard"
@@ -110,23 +113,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_weather"
-                        android:contentDescription="@string/weather" />
+                        android:contentDescription="@string/weather"
+                        android:src="@drawable/ic_weather" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="@string/weather_info"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -145,23 +148,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_pest_alert"
-                        android:contentDescription="@string/pest_alerts" />
+                        android:contentDescription="@string/pest_alerts"
+                        android:src="@drawable/ic_pest_alert" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="@string/pest_alerts"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -180,23 +183,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_market"
-                        android:contentDescription="@string/market_prices" />
+                        android:contentDescription="@string/market_prices"
+                        android:src="@drawable/ic_market" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="@string/market_prices"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -215,23 +218,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:padding="16dp">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:src="@drawable/ic_govt"
-                        android:contentDescription="@string/govt_schemes" />
+                        android:contentDescription="@string/govt_schemes"
+                        android:src="@drawable/ic_govt" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:text="@string/govt_schemes"
                         android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:layout_marginTop="8dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -241,19 +244,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="@string/advisory_highlights"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             app:cardBackgroundColor="#1A1A1A"
             app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            android:layout_marginBottom="24dp">
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -263,10 +266,10 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_rain"
                     android:background="#00D66C"
-                    android:contentDescription="@string/rain_advisory" />
+                    android:contentDescription="@string/rain_advisory"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_rain" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -285,10 +288,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="@string/rain_advisory_desc"
                         android:textColor="#9CA3AF"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -297,9 +300,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
