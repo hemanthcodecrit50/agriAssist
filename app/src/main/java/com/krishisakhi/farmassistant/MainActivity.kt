@@ -3,6 +3,7 @@ package com.krishisakhi.farmassistant
 import android.Manifest
 import android.app.Dialog
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import android.widget.Button
@@ -65,7 +66,8 @@ class MainActivity : AppCompatActivity() {
 
         // Quick access cards
         findViewById<MaterialCardView>(R.id.weatherCard).setOnClickListener {
-            Toast.makeText(this, "Weather Information", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, WeatherActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<MaterialCardView>(R.id.pestAlertCard).setOnClickListener {
