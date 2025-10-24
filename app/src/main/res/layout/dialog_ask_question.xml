@@ -55,6 +55,7 @@
                 android:src="@drawable/ic_microphone_big" />
 
             <TextView
+                android:id="@+id/tapToSpeakText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
