@@ -32,8 +32,8 @@ class WeatherActivity : AppCompatActivity() {
     private lateinit var pressureText: TextView
     private lateinit var visibilityText: TextView
 
-    // OpenWeatherMap API Key - Replace with your actual API key
-    private val API_KEY = "YOUR_API_KEY"
+    // OpenWeatherMap API Key from BuildConfig (secure)
+    private val API_KEY = BuildConfig.OPENWEATHER_API_KEY
     private val BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
     override fun onCreate(savedInstanceState: Bundle?) {
