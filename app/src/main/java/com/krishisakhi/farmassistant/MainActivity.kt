@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.krishisakhi.farmassistant.data.NotificationItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -141,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         if (checkAudioPermission()) {
             val filePath = audioRecorder?.startRecording()
             if (filePath != null) {
-                micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_red_dark))
+                micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_green_dark))
                 tapToSpeakText.text = "Recording... Tap to stop"
                 Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show()
             } else {
@@ -202,10 +203,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-// Data class for notifications
-data class NotificationItem(
-    val title: String,
-    val description: String,
-    val time: String
-)
