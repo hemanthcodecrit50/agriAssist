@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F0F0F"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!-- Spacer for vertical centering -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Success/Security Icon -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:cardBackgroundColor="#1A1A1A"
+            app:cardCornerRadius="60dp"
+            app:cardElevation="8dp"
+            app:strokeColor="#00D66C"
+            app:strokeWidth="2dp"
+            android:layout_marginBottom="32dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📱"
+                    android:textSize="56sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Title with agricultural theme -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Verify Your Number"
+            android:textSize="28sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Phone Number Display with styling -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#1A1A1A"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/phoneNumberTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OTP sent to +91 XXXXXXXXXX"
+                android:textSize="14sp"
+                android:textColor="#00D66C"
+                android:textStyle="bold"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter the 6-digit code we sent"
+            android:textSize="14sp"
+            android:textColor="#9CA3AF"
+            android:layout_marginBottom="40dp" />
+
+        <!-- OTP Card with modern design -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#1A1A1A"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:strokeColor="#00D66C"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔐"
+                        android:textSize="20sp"
+                        android:layout_marginEnd="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter Verification Code"
+                        android:textSize="18sp"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <!-- OTP Input with enhanced styling -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/button_background"
+                    android:backgroundTint="#2A2A2A"
+                    android:padding="8dp">
+
+                    <EditText
+                        android:id="@+id/otpEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="● ● ● ● ● ●"
+                        android:textColorHint="#4B5563"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:textSize="32sp"
+                        android:textColor="#00D66C"
+                        android:textStyle="bold"
+                        android:padding="16dp"
+                        android:gravity="center"
+                        android:letterSpacing="0.3"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- Resend OTP section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Didn't receive code? "
+                        android:textSize="13sp"
+                        android:textColor="#9CA3AF" />
+
+                    <TextView
+                        android:id="@+id/resendOtpTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Resend"
+                        android:textSize="13sp"
+                        android:textColor="#00D66C"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Verify Button with agricultural theme -->
+        <Button
+            android:id="@+id/verifyOtpButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Verify &amp; Continue to Farm"
+            android:textSize="16sp"
+            android:textColor="#1A1A1A"
+            android:textStyle="bold"
+            android:background="@drawable/button_background"
+            android:backgroundTint="#00D66C"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.02"
+            android:elevation="4dp" />
+
+        <!-- Security info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            android:padding="16dp"
+            android:background="@drawable/button_background"
+            android:backgroundTint="#1A1A1A"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🛡️ Secure Verification"
+                android:textSize="12sp"
+                android:textColor="#9CA3AF"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your phone number is protected and encrypted"
+                android:textSize="10sp"
+                android:textColor="#6B7280"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- Bottom spacer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</ScrollView>
+

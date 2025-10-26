@@ -1,26 +1,25 @@
-<!--<vector xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:width="24dp"-->
-<!--    android:height="24dp"-->
-<!--    android:viewportWidth="24"-->
-<!--    android:viewportHeight="24">-->
-<!--    <path-->
-<!--        android:fillColor="#00D66C"-->
-<!--        android:pathData="M12,2C8.13,2 5,5.13 5,9c0,5.25 7,13 7,13s7,-7.75 7,-13c0,-3.87 -3.13,-7 -7,-7zM12,11.5c-1.38,0 -2.5,-1.12 -2.5,-2.5s1.12,-2.5 2.5,-2.5 2.5,1.12 2.5,2.5 -1.12,2.5 -2.5,2.5z"/>-->
-<!--</vector>-->
-
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
 
-    <!-- Circle for background -->
+    <!-- Background Circle -->
     <path
         android:fillColor="#00D66C"
-        android:pathData="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2z"/>
+        android:pathData="M60,10 a50,50 0 1,1 0,100 a50,50 0 1,1 0,-100z" />
 
-    <!-- Circle for the inner content (the smaller circle) -->
+    <!-- Simple Leaf Placeholder -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M12,11.5 C10.12,11.5 8.5,10.12 8.5,8.5 C8.5,6.88 10.12,5.5 12,5.5 C13.88,5.5 15.5,6.88 15.5,8.5 C15.5,10.12 13.88,11.5 12,11.5z"/>
+        android:pathData="M60,40 c-10,-15 -20,-20 -25,-12 c-5,8 3,20 15,28 c5,3 10,4 10,4 c0,0 5,-1 10,-4 c12,-8 20,-20 15,-28 c-5,-8 -15,-3 -25,12z" />
+
+    <!-- Leaf Stem -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,72 L60,50"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF" />
+
 </vector>
+
