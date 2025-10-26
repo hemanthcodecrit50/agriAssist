@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F0F0F"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!-- Spacer for vertical centering -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- KrishiSakhi Logo -->
+        <ImageView
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:src="@drawable/ic_krishisakhi_foreground"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="@string/app_name" />
+
+        <!-- App Name with agricultural theme -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="32sp"
+            android:textColor="#00D66C"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="8dp"
+            android:letterSpacing="0.02" />
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text= "Your Smart Farming Companion."
+            android:textSize="16sp"
+            android:textColor="#9CA3AF"
+            android:layout_marginBottom="8dp"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Empowering farmers with technology"
+            android:textSize="13sp"
+            android:textColor="#6B7280"
+            android:layout_marginBottom="48dp"
+            android:gravity="center" />
+
+        <!-- Phone Number Card with dark theme -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#1A1A1A"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:strokeColor="#00D66C"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_profile"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="Phone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter Your Phone Number"
+                        android:textSize="18sp"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+
+                <!-- Phone input container -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/button_background"
+                    android:backgroundTint="#2A2A2A"
+                    android:padding="4dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🇮🇳 +91"
+                        android:textSize="18sp"
+                        android:textColor="#00D66C"
+                        android:textStyle="bold"
+                        android:padding="12dp"
+                        android:layout_gravity="center_vertical" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="32dp"
+                        android:background="#3A3A3A"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp" />
+
+                    <EditText
+                        android:id="@+id/phoneNumberEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Enter 10-digit mobile number"
+                        android:textColorHint="#6B7280"
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:textSize="18sp"
+                        android:textColor="#FFFFFF"
+                        android:padding="12dp"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔐"
+                        android:textSize="16sp"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="We'll send you a secure One Time Password(OTP)"
+                        android:textSize="12sp"
+                        android:textColor="#9CA3AF"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Send OTP Button with agricultural theme -->
+        <Button
+            android:id="@+id/sendOtpButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Continue with Phone Number"
+            android:textSize="16sp"
+            android:textColor="#1A1A1A"
+            android:textStyle="bold"
+            android:background="@drawable/button_background"
+            android:backgroundTint="#00D66C"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.02"
+            android:elevation="4dp" />
+
+        <!-- Test info with subtle styling -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            android:padding="16dp"
+            android:background="@drawable/button_background"
+            android:backgroundTint="#1A1A1A">
+
+            <TextView
+                android:id="@+id/testNumberInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🧪 Testing Mode: Use Firebase test numbers"
+                android:textSize="11sp"
+                android:textColor="#6B7280"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Your data is safe and encrypted"
+                android:textSize="10sp"
+                android:textColor="#4B5563"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <!-- Terms and Privacy -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="By continuing, you agree to our Terms of Service and Privacy Policy"
+            android:textSize="11sp"
+            android:textColor="#6B7280"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp" />
+
+        <!-- Bottom spacer -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</ScrollView>
+

@@ -67,4 +67,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-safetynet:18.0.1")
 }

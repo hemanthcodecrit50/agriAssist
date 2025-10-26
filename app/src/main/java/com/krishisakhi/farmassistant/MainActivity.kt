@@ -17,10 +17,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.auth.FirebaseAuth
 import com.krishisakhi.farmassistant.data.NotificationItem
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var notificationRecyclerView: RecyclerView
     private lateinit var notificationAdapter: NotificationAdapter
     private var audioRecorder: AudioRecorder? = null
@@ -32,6 +34,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check authentication status
+        auth = FirebaseAuth.getInstance()
+        if (auth.currentUser == null) {
+            // User not authenticated, redirect to login
+            startActivity(Intent(this, PhoneAuthActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         audioRecorder = AudioRecorder(this)
@@ -57,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupQuickAccessButtons() {
         // Profile button
         findViewById<ImageButton>(R.id.profileButton).setOnClickListener {
-            Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show()
+            showLogoutDialog()
         }
 
         // Ask Question button
@@ -197,6 +209,23 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permission denied. Cannot record audio.", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun showLogoutDialog() {
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Logout")
+        builder.setMessage("Are you sure you want to logout?")
+        builder.setPositiveButton("Logout") { dialog, _ ->
+            auth.signOut()
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, PhoneAuthActivity::class.java))
+            finish()
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     override fun onDestroy() {
