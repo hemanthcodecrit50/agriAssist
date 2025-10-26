@@ -72,15 +72,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialCardView>(R.id.pestAlertCard).setOnClickListener {
-            Toast.makeText(this, "Pest Alerts", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PestAlertActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<MaterialCardView>(R.id.marketPriceCard).setOnClickListener {
-            Toast.makeText(this, "Market Prices", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MarketPricesActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<MaterialCardView>(R.id.govtSchemeCard).setOnClickListener {
-            Toast.makeText(this, "Government Schemes", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, GovtSchemeActivity::class.java)
+            startActivity(intent)
         }
     }
 
