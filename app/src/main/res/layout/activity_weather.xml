@@ -93,6 +93,20 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Current Location Button -->
+        <Button
+            android:id="@+id/currentLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Use Current Location"
+            android:textColor="#1A1A1A"
+            android:textStyle="bold"
+            android:backgroundTint="#00D66C"
+            app:cornerRadius="12dp"
+            android:drawableStart="@drawable/ic_weather"
+            android:drawablePadding="8dp"
+            android:layout_marginBottom="24dp" />
+
         <!-- Loading Indicator -->
         <ProgressBar
             android:id="@+id/loadingIndicator"
