@@ -98,9 +98,19 @@ class PhoneAuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_phone_auth)
 
         auth = FirebaseAuth.getInstance()
+
+        // Check if user is already logged in
+        if (auth.currentUser != null) {
+            // User is already authenticated, go directly to MainActivity
+            Log.d(TAG, "User already logged in: ${auth.currentUser?.phoneNumber}")
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
+        setContentView(R.layout.activity_phone_auth)
 
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText)
         sendOtpButton = findViewById(R.id.sendOtpButton)
