@@ -27,8 +27,10 @@ android {
         if (localPropertiesFile.exists()) {
             localPropertiesFile.inputStream().use { localProperties.load(it) }
         }
-        val apiKey = localProperties.getProperty("OPENWEATHER_API_KEY") ?: ""
-        buildConfigField("String", "OPENWEATHER_API_KEY", "\"$apiKey\"")
+        val weatherApiKey = localProperties.getProperty("OPENWEATHER_API_KEY") ?: ""
+        val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+        buildConfigField("String", "OPENWEATHER_API_KEY", "\"$weatherApiKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     buildFeatures {
@@ -70,4 +72,13 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.android.gms:play-services-safetynet:18.0.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // Gemini AI SDK
+    implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
+
+    // OkHttp for API calls
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Coroutines for async operations
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }

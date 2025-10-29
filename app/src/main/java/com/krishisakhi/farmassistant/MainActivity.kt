@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.pm.PackageManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
@@ -19,11 +20,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.krishisakhi.farmassistant.data.NotificationItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var notificationRecyclerView: RecyclerView
+    
+    // AI Services
+    private var speechToTextConverter: SpeechToTextConverter? = null
+    private var geminiAIService: GeminiAIService? = null
+    private var textToSpeechPlayer: TextToSpeechPlayer? = null
+    private var isProcessingAudio = false
     private lateinit var notificationAdapter: NotificationAdapter
     private var audioRecorder: AudioRecorder? = null
     private var currentDialog: Dialog? = null
@@ -47,6 +57,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         audioRecorder = AudioRecorder(this)
+
+        // Initialize AI services
+        speechToTextConverter = SpeechToTextConverter(this)
+        geminiAIService = GeminiAIService(BuildConfig.GEMINI_API_KEY)
+        textToSpeechPlayer = TextToSpeechPlayer(this)
+        textToSpeechPlayer?.initialize {
+            Log.d("MainActivity", "Text-to-Speech initialized")
+        }
+
         setupNotifications()
         setupQuickAccessButtons()
     }
@@ -114,38 +133,70 @@ class MainActivity : AppCompatActivity() {
         val sendButton = dialog.findViewById<Button>(R.id.sendButton)
         val cancelButton = dialog.findViewById<Button>(R.id.cancelButton)
 
+        var isListening = false
+
         micButton.setOnClickListener {
-            if (audioRecorder?.isRecording == true) {
-                stopRecording(micButton, tapToSpeakText, questionEditText)
+            if (isProcessingAudio) {
+                Toast.makeText(this, "Please wait, processing previous request...", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!isListening) {
+                // Start listening - begin speech recognition immediately
+                if (checkAudioPermission()) {
+                    isListening = true
+                    micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_red_dark))
+                    tapToSpeakText.text = "🎤 Listening... Speak now!"
+                    questionEditText.setText("Listening for your question...")
+                    Toast.makeText(this, "Speak your question now...", Toast.LENGTH_SHORT).show()
+
+                    // Start speech recognition immediately
+                    startSpeechRecognition(micButton, tapToSpeakText, questionEditText)
+                } else {
+                    requestAudioPermission()
+                }
             } else {
-                startRecording(micButton, tapToSpeakText)
+                // Stop listening
+                isListening = false
+                speechToTextConverter?.stopListening()
+                micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_green))
+                tapToSpeakText.text = "Processing..."
+                Toast.makeText(this, "Processing your speech...", Toast.LENGTH_SHORT).show()
             }
         }
 
         sendButton.setOnClickListener {
-            if (audioRecorder?.isRecording == true) {
-                stopRecording(micButton, tapToSpeakText, questionEditText)
+            if (isProcessingAudio) {
+                Toast.makeText(this, "Please wait, processing...", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
             val question = questionEditText.text.toString()
-            if (question.isNotEmpty()) {
-                Toast.makeText(this, "Question sent!", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
+            if (question.isNotEmpty() && !question.startsWith("Listening") && !question.startsWith("You asked") && !question.startsWith("AI:")) {
+                // If user typed a question, send it directly to Gemini AI
+                sendTypedQuestion(question, questionEditText, tapToSpeakText)
             } else {
-                Toast.makeText(this, "Please ask a question", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please ask a question or use the microphone", Toast.LENGTH_SHORT).show()
             }
         }
 
         cancelButton.setOnClickListener {
-            if (audioRecorder?.isRecording == true) {
-                audioRecorder?.cancelRecording()
+            if (isProcessingAudio) {
+                speechToTextConverter?.stopListening()
+                textToSpeechPlayer?.stop()
+                isProcessingAudio = false
+            }
+            if (isListening) {
+                speechToTextConverter?.stopListening()
             }
             dialog.dismiss()
         }
 
         dialog.setOnDismissListener {
-            if (audioRecorder?.isRecording == true) {
-                audioRecorder?.cancelRecording()
+            if (isProcessingAudio) {
+                speechToTextConverter?.stopListening()
+                textToSpeechPlayer?.stop()
+                isProcessingAudio = false
             }
             currentDialog = null
         }
@@ -153,31 +204,141 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun startRecording(micButton: ImageButton, tapToSpeakText: TextView) {
-        if (checkAudioPermission()) {
-            val filePath = audioRecorder?.startRecording()
-            if (filePath != null) {
-                micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_green_dark))
-                tapToSpeakText.text = "Recording... Tap to stop"
-                Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Failed to start recording", Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            requestAudioPermission()
+    private fun startSpeechRecognition(micButton: ImageButton, tapToSpeakText: TextView, questionEditText: EditText) {
+        if (isProcessingAudio) {
+            Toast.makeText(this, "Already processing a query. Please wait.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        isProcessingAudio = true
+
+        // Initialize AI services if not already done
+        if (speechToTextConverter == null) {
+            speechToTextConverter = SpeechToTextConverter(this)
+        }
+        if (geminiAIService == null) {
+            geminiAIService = GeminiAIService(BuildConfig.GEMINI_API_KEY)
+        }
+        if (textToSpeechPlayer == null) {
+            textToSpeechPlayer = TextToSpeechPlayer(this)
+            textToSpeechPlayer?.initialize {
+                android.util.Log.d("MainActivity", "Text-to-Speech initialized")
+            }
+        }
+
+        // Start live speech recognition immediately
+        speechToTextConverter?.startLiveSpeechRecognition(
+            object : SpeechToTextConverter.SpeechCallback {
+                override fun onSuccess(transcribedText: String) {
+                    runOnUiThread {
+                        micButton.setBackgroundTintList(ContextCompat.getColorStateList(this@MainActivity, R.color.primary_green))
+                        questionEditText.setText("You asked: $transcribedText")
+                        tapToSpeakText.text = "🤖 Getting AI response..."
+                    }
+
+                    // Send to Gemini AI
+                    sendToGeminiAndRespond(transcribedText, questionEditText, tapToSpeakText)
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        micButton.setBackgroundTintList(ContextCompat.getColorStateList(this@MainActivity, R.color.primary_green))
+                        questionEditText.setText("Speech recognition error: $error")
+                        tapToSpeakText.text = getString(R.string.tap_to_speak)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Speech error: $error. Try speaking louder or check your internet connection.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        isProcessingAudio = false
+                    }
+                }
+            }
+        )
     }
 
-    private fun stopRecording(micButton: ImageButton, tapToSpeakText: TextView, questionEditText: EditText) {
-        val filePath = audioRecorder?.stopRecording()
-        micButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.primary_green))
-        tapToSpeakText.text = getString(R.string.tap_to_speak)
+    private fun processLiveSpeechQuery(questionEditText: EditText, tapToSpeakText: TextView) {
+        // This method is no longer needed but kept for compatibility
+        startSpeechRecognition(
+            currentDialog?.findViewById(R.id.micButton) ?: return,
+            tapToSpeakText,
+            questionEditText
+        )
+    }
 
-        if (filePath != null) {
-            Toast.makeText(this, "Recording saved: ${filePath.substringAfterLast("/")}", Toast.LENGTH_SHORT).show()
-            questionEditText.setText("Audio recorded: ${filePath.substringAfterLast("/")}")
-        } else {
-            Toast.makeText(this, "Failed to save recording", Toast.LENGTH_SHORT).show()
+    private fun sendTypedQuestion(question: String, questionEditText: EditText, tapToSpeakText: TextView) {
+        if (isProcessingAudio) {
+            Toast.makeText(this, "Already processing a query. Please wait.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        isProcessingAudio = true
+        questionEditText.setText("You asked: $question")
+        tapToSpeakText.text = "🤖 Getting AI response..."
+
+        // Send directly to Gemini AI
+        sendToGeminiAndRespond(question, questionEditText, tapToSpeakText)
+    }
+
+    private fun sendToGeminiAndRespond(query: String, questionEditText: EditText, tapToSpeakText: TextView) {
+        CoroutineScope(Dispatchers.Main).launch {
+            geminiAIService?.generateResponse(
+                query,
+                object : GeminiAIService.AICallback {
+                    override fun onSuccess(response: String) {
+                        runOnUiThread {
+                            questionEditText.setText("AI: $response")
+                            tapToSpeakText.text = "🔊 Playing response..."
+
+                            // Convert AI response to speech and play
+                            textToSpeechPlayer?.speak(response, object : TextToSpeechPlayer.TTSCallback {
+                                override fun onStart() {
+                                    runOnUiThread {
+                                        tapToSpeakText.text = "🔊 Speaking..."
+                                    }
+                                }
+
+                                override fun onDone() {
+                                    runOnUiThread {
+                                        tapToSpeakText.text = "✅ Response complete!"
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Response played successfully!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        isProcessingAudio = false
+                                    }
+                                }
+
+                                override fun onError(error: String) {
+                                    runOnUiThread {
+                                        tapToSpeakText.text = getString(R.string.tap_to_speak)
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "TTS Error: $error",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        isProcessingAudio = false
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                    override fun onError(error: String) {
+                        runOnUiThread {
+                            questionEditText.setText("Error: $error")
+                            tapToSpeakText.text = getString(R.string.tap_to_speak)
+                            Toast.makeText(
+                                this@MainActivity,
+                                "AI Error: $error",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            isProcessingAudio = false
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -233,5 +394,6 @@ class MainActivity : AppCompatActivity() {
         if (audioRecorder?.isRecording == true) {
             audioRecorder?.cancelRecording()
         }
+        textToSpeechPlayer?.shutdown()
     }
 }
