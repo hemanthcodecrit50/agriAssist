@@ -287,41 +287,31 @@ class MainActivity : AppCompatActivity() {
                 object : GeminiAIService.AICallback {
                     override fun onSuccess(response: String) {
                         runOnUiThread {
-                            questionEditText.setText("AI: $response")
-                            tapToSpeakText.text = "🔊 Playing response..."
+                            // Close the dialog
+                            currentDialog?.dismiss()
 
-                            // Convert AI response to speech and play
+                            // Launch AIResponseActivity to show formatted response
+                            val intent = Intent(this@MainActivity, AIResponseActivity::class.java)
+                            intent.putExtra(AIResponseActivity.EXTRA_USER_QUERY, query)
+                            intent.putExtra(AIResponseActivity.EXTRA_AI_RESPONSE, response)
+                            startActivity(intent)
+
+                            // Play text-to-speech in background
                             textToSpeechPlayer?.speak(response, object : TextToSpeechPlayer.TTSCallback {
                                 override fun onStart() {
-                                    runOnUiThread {
-                                        tapToSpeakText.text = "🔊 Speaking..."
-                                    }
+                                    Log.d("MainActivity", "TTS Started")
                                 }
 
                                 override fun onDone() {
-                                    runOnUiThread {
-                                        tapToSpeakText.text = "✅ Response complete!"
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Response played successfully!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        isProcessingAudio = false
-                                    }
+                                    Log.d("MainActivity", "TTS Completed")
                                 }
 
                                 override fun onError(error: String) {
-                                    runOnUiThread {
-                                        tapToSpeakText.text = getString(R.string.tap_to_speak)
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "TTS Error: $error",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        isProcessingAudio = false
-                                    }
+                                    Log.e("MainActivity", "TTS Error: $error")
                                 }
                             })
+
+                            isProcessingAudio = false
                         }
                     }
 
