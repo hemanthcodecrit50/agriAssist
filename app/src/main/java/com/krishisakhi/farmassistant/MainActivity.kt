@@ -20,9 +20,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.krishisakhi.farmassistant.data.NotificationItem
+import com.krishisakhi.farmassistant.rag.EnhancedAIService
+import com.krishisakhi.farmassistant.classifier.QueryIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     
     // AI Services
     private var speechToTextConverter: SpeechToTextConverter? = null
-    private var geminiAIService: GeminiAIService? = null
+    private var enhancedAIService: EnhancedAIService? = null
     private var textToSpeechPlayer: TextToSpeechPlayer? = null
     private var isProcessingAudio = false
     private lateinit var notificationAdapter: NotificationAdapter
@@ -60,10 +63,22 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize AI services
         speechToTextConverter = SpeechToTextConverter(this)
-        geminiAIService = GeminiAIService(BuildConfig.GEMINI_API_KEY)
+        enhancedAIService = EnhancedAIService(this, BuildConfig.GEMINI_API_KEY)
         textToSpeechPlayer = TextToSpeechPlayer(this)
         textToSpeechPlayer?.initialize {
             Log.d("MainActivity", "Text-to-Speech initialized")
+        }
+
+        // Initialize knowledge base in background
+        CoroutineScope(Dispatchers.IO).launch {
+            val success = enhancedAIService?.initialize() ?: false
+            withContext(Dispatchers.Main) {
+                if (success) {
+                    Log.d("MainActivity", "Knowledge base initialized successfully")
+                } else {
+                    Log.e("MainActivity", "Failed to initialize knowledge base")
+                }
+            }
         }
 
         setupNotifications()
@@ -216,8 +231,8 @@ class MainActivity : AppCompatActivity() {
         if (speechToTextConverter == null) {
             speechToTextConverter = SpeechToTextConverter(this)
         }
-        if (geminiAIService == null) {
-            geminiAIService = GeminiAIService(BuildConfig.GEMINI_API_KEY)
+        if (enhancedAIService == null) {
+            enhancedAIService = EnhancedAIService(this, BuildConfig.GEMINI_API_KEY)
         }
         if (textToSpeechPlayer == null) {
             textToSpeechPlayer = TextToSpeechPlayer(this)
@@ -282,19 +297,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendToGeminiAndRespond(query: String, questionEditText: EditText, tapToSpeakText: TextView) {
         CoroutineScope(Dispatchers.Main).launch {
-            geminiAIService?.generateResponse(
+            enhancedAIService?.generateEnhancedResponse(
                 query,
-                object : GeminiAIService.AICallback {
-                    override fun onSuccess(response: String) {
+                object : EnhancedAIService.EnhancedAICallback {
+                    override fun onSuccess(response: String, intent: QueryIntent, sources: List<String>) {
                         runOnUiThread {
                             // Close the dialog
                             currentDialog?.dismiss()
 
                             // Launch AIResponseActivity to show formatted response
-                            val intent = Intent(this@MainActivity, AIResponseActivity::class.java)
-                            intent.putExtra(AIResponseActivity.EXTRA_USER_QUERY, query)
-                            intent.putExtra(AIResponseActivity.EXTRA_AI_RESPONSE, response)
-                            startActivity(intent)
+                            val activityIntent = Intent(this@MainActivity, AIResponseActivity::class.java)
+                            activityIntent.putExtra(AIResponseActivity.EXTRA_USER_QUERY, query)
+                            activityIntent.putExtra(AIResponseActivity.EXTRA_AI_RESPONSE, response)
+                            activityIntent.putExtra("INTENT_TYPE", intent.name)
+                            activityIntent.putStringArrayListExtra("SOURCES", ArrayList(sources))
+                            startActivity(activityIntent)
 
                             // Play text-to-speech in background
                             textToSpeechPlayer?.speak(response, object : TextToSpeechPlayer.TTSCallback {

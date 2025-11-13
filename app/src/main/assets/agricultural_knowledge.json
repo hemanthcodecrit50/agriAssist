@@ -1,0 +1,143 @@
+[
+  {
+    "id": "doc_001",
+    "title": "Rice Cultivation in Kharif Season",
+    "content": "Rice is the main kharif crop grown during monsoon. Transplant 20-25 day old seedlings in June-July when monsoon arrives. Maintain row spacing of 20x15 cm. Apply 120 kg N, 60 kg P2O5, and 40 kg K2O per hectare. Keep 5-10 cm water depth during growth stages. Harvest when 80% of grains turn golden yellow.",
+    "category": "crop_cultivation",
+    "tags": ["rice", "kharif", "monsoon", "paddy", "transplanting"]
+  },
+  {
+    "id": "doc_002",
+    "title": "Wheat Cultivation in Rabi Season",
+    "content": "Sow wheat seeds in November after rice harvest. Use seed rate of 100-125 kg per hectare with row spacing of 20-22 cm. Apply 120 kg N, 60 kg P2O5, 40 kg K2O per hectare. First irrigation at crown root stage (21 days), second at tillering, third at jointing, fourth at flowering. Harvest when grain moisture is 20-25%.",
+    "category": "crop_cultivation",
+    "tags": ["wheat", "rabi", "winter", "cultivation", "gehu"]
+  },
+  {
+    "id": "doc_003",
+    "title": "Tomato Farming Techniques",
+    "content": "Tomato requires well-drained loamy soil with pH 6.0-7.0. Transplant 25-30 day old seedlings at 60x45 cm spacing. Apply 150 kg N, 100 kg P2O5, 80 kg K2O per hectare in splits. Stake plants for support. Water regularly but avoid waterlogging. Harvest when fruits are firm and fully colored. Store at 15-20°C temperature.",
+    "category": "crop_cultivation",
+    "tags": ["tomato", "vegetable", "horticulture", "tamatar"]
+  },
+  {
+    "id": "doc_004",
+    "title": "Cotton Cultivation Guide",
+    "content": "Cotton is a kharif crop requiring 180-200 days to mature. Sow in May-June with row spacing 90x60 cm. Apply 120 kg N, 60 kg P2O5, 60 kg K2O per hectare. Requires 700-1300 mm rainfall or 6-8 irrigations. Monitor for bollworm and aphid pests. Pick cotton when bolls are fully opened. Store in dry place to maintain fiber quality.",
+    "category": "crop_cultivation",
+    "tags": ["cotton", "kharif", "kapas", "fiber", "cash crop"]
+  },
+  {
+    "id": "doc_005",
+    "title": "Brown Plant Hopper Control in Rice",
+    "content": "Brown plant hopper (BPH) causes hopper burn in rice fields. Symptoms include yellowing and wilting of plants. Use resistant varieties like Swarna Sub1. Maintain proper plant spacing and avoid excessive nitrogen. Spray imidacloprid 17.8% SL @ 100 ml/ha or thiamethoxam 25% WG @ 100 g/ha when population exceeds 10 hoppers per hill.",
+    "category": "pest_disease",
+    "tags": ["rice", "insect", "bph", "hopper", "pest control"]
+  },
+  {
+    "id": "doc_006",
+    "title": "Late Blight Management in Potato",
+    "content": "Late blight caused by Phytophthora infestans destroys potato crops. Water-soaked lesions appear on leaves and stems. Use disease-free certified seed. Practice crop rotation. Earthing up and proper drainage prevent spread. Spray mancozeb 75% WP @ 2.5 kg/ha or metalaxyl + mancozeb @ 2.5 kg/ha at 10-day intervals from disease appearance.",
+    "category": "pest_disease",
+    "tags": ["potato", "fungus", "blight", "disease", "aloo"]
+  },
+  {
+    "id": "doc_007",
+    "title": "Fruit Borer Control in Tomato",
+    "content": "Fruit borer (Helicoverpa armigera) damages tomato by boring into fruits. Remove and destroy damaged fruits. Install pheromone traps @ 8 per hectare. Spray neem oil 3% or Bt (Bacillus thuringiensis) @ 1 kg/ha. For severe infestation, use spinosad 45% SC @ 160 ml/ha or emamectin benzoate 5% SG @ 200 g/ha.",
+    "category": "pest_disease",
+    "tags": ["tomato", "insect", "borer", "pest", "fruit damage"]
+  },
+  {
+    "id": "doc_008",
+    "title": "Aphid Control in Wheat",
+    "content": "Aphids suck sap from wheat plants causing yield loss. Symptoms include leaf curling and honeydew secretion. Monitor fields regularly. Use yellow sticky traps for early detection. Spray imidacloprid 17.8% SL @ 100 ml/ha or thiamethoxam 25% WG @ 100 g/ha. Avoid early sowing to escape peak aphid population.",
+    "category": "pest_disease",
+    "tags": ["wheat", "aphid", "insect", "pest", "sap sucker"]
+  },
+  {
+    "id": "doc_009",
+    "title": "NPK Fertilizer Application Guide",
+    "content": "NPK represents Nitrogen (N), Phosphorus (P), and Potassium (K) - essential plant nutrients. Apply nitrogen in splits: 1/3 at sowing, 1/3 at tillering, 1/3 at flowering. Apply full phosphorus and potassium as basal dose before sowing. General recommendation for cereals: 120:60:40 NPK kg/ha. Conduct soil testing for precise requirements.",
+    "category": "fertilizer",
+    "tags": ["npk", "fertilizer", "nutrients", "khad", "urea"]
+  },
+  {
+    "id": "doc_010",
+    "title": "Organic Manure Benefits",
+    "content": "Organic manure improves soil structure and fertility. Apply 10-15 tonnes FYM (farmyard manure) per hectare before plowing. Compost adds beneficial microorganisms. Vermicompost @ 2-3 tonnes/ha provides slow-release nutrients. Green manure crops like dhaincha and sunhemp add nitrogen. Mix manure in top 15 cm soil layer for best results.",
+    "category": "fertilizer",
+    "tags": ["organic", "manure", "fym", "compost", "jevik khad"]
+  },
+  {
+    "id": "doc_011",
+    "title": "Drip Irrigation System",
+    "content": "Drip irrigation saves 40-60% water compared to flood method. Install drippers at 30-60 cm spacing based on crop. Apply water daily for 1-2 hours. Suitable for vegetables, fruits, sugarcane, cotton. Advantages: water saving, reduced weed growth, fertigation possible. Initial investment: Rs 50,000-1,00,000 per acre. Subsidy available under PMKSY scheme.",
+    "category": "irrigation",
+    "tags": ["drip", "irrigation", "water saving", "sinchai", "micro irrigation"]
+  },
+  {
+    "id": "doc_012",
+    "title": "Critical Irrigation Stages for Crops",
+    "content": "Crops need water most during critical stages. Wheat: CRI (21 days), tillering, jointing, flowering, grain filling. Rice: transplanting, tillering, panicle initiation, flowering, grain filling. Cotton: flowering and boll development. Maize: silking and grain filling. Water stress at these stages causes severe yield reduction. Plan irrigation schedule accordingly.",
+    "category": "irrigation",
+    "tags": ["irrigation", "critical stages", "water", "crop growth"]
+  },
+  {
+    "id": "doc_013",
+    "title": "Soil Testing Importance",
+    "content": "Soil testing determines nutrient status and pH. Collect samples from 0-15 cm depth from 10-15 spots in zigzag pattern. Mix thoroughly and send 500g to testing lab. Test parameters: N, P, K, pH, organic carbon, micronutrients (Zn, Fe, Mn, Cu, B). Based on report, apply balanced fertilizers. Test soil every 2-3 years. Government labs charge Rs 200-500 per sample.",
+    "category": "soil_health",
+    "tags": ["soil", "testing", "nutrients", "mitti", "parikshan"]
+  },
+  {
+    "id": "doc_014",
+    "title": "Soil pH Management",
+    "content": "Optimum soil pH for most crops is 6.5-7.5. Acidic soil (pH less than 6): Apply agricultural lime @ 5-10 quintals per hectare. Alkaline soil (pH more than 8): Apply gypsum @ 10-15 quintals per hectare or elemental sulphur @ 500 kg per hectare. Add organic matter to buffer pH changes. Recheck pH after 6 months of amendment application.",
+    "category": "soil_health",
+    "tags": ["soil", "ph", "acidic", "alkaline", "lime", "gypsum"]
+  },
+  {
+    "id": "doc_015",
+    "title": "PM-KISAN Scheme Benefits",
+    "content": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN) provides Rs 6000 per year to all landholding farmers. Amount given in 3 equal installments of Rs 2000 each. Register at pmkisan.gov.in with Aadhaar number, bank account, and land records. Amount credited directly to bank account via DBT. Check application status online using Aadhaar or mobile number. Helpline: 155261.",
+    "category": "govt_scheme",
+    "tags": ["pmkisan", "scheme", "subsidy", "government", "yojana", "6000"]
+  },
+  {
+    "id": "doc_016",
+    "title": "Crop Insurance Under PMFBY",
+    "content": "Pradhan Mantri Fasal Bima Yojana provides comprehensive crop insurance. Farmer premium: 2% for kharif crops, 1.5% for rabi crops, 5% for horticultural crops. Covers yield loss due to natural calamities, pests, diseases. Enroll within 7 days of sowing at banks, CSCs, or online portal. Claims settled based on crop cutting experiments. Notification received via SMS.",
+    "category": "govt_scheme",
+    "tags": ["insurance", "fasal bima", "crop insurance", "pmfby", "yojana"]
+  },
+  {
+    "id": "doc_017",
+    "title": "Minimum Support Price (MSP) System",
+    "content": "Government announces MSP for 23 crops before sowing season to ensure minimum price for farmers. Major MSP crops: paddy, wheat, pulses, oilseeds, cotton, sugarcane. Procurement done by FCI and state agencies at MSP rates. Check current MSP at agricoop.nic.in or eNAM portal. Farmers can sell produce to government at MSP or in open market, whichever gives better price.",
+    "category": "market_price",
+    "tags": ["msp", "price", "support price", "government", "procurement"]
+  },
+  {
+    "id": "doc_018",
+    "title": "Agricultural Marketing Tips",
+    "content": "Get best prices: 1) Clean and grade produce properly, 2) Sell directly in mandi to avoid middlemen, 3) Use eNAM platform for price discovery, 4) Form farmer groups for collective bargaining, 5) Add value through drying/processing, 6) Consider contract farming with companies. Check daily mandi prices on Kisan Suvidha app. Avoid distress selling immediately after harvest. Store if prices are low.",
+    "category": "market_price",
+    "tags": ["marketing", "selling", "mandi", "price", "enam", "tips"]
+  },
+  {
+    "id": "doc_019",
+    "title": "Monsoon and Kharif Crops",
+    "content": "Southwest monsoon arrives in June and retreats by September. Kharif crops sown with monsoon onset. Major crops: rice, maize, cotton, soybean, groundnut, bajra, jowar. Require 50-100 cm rainfall. Sowing time: June-July. Harvesting: September-October. Plan sowing based on IMD weather forecast. Delay sowing if monsoon is delayed to avoid moisture stress at critical stages.",
+    "category": "weather",
+    "tags": ["monsoon", "kharif", "rainfall", "season", "barish"]
+  },
+  {
+    "id": "doc_020",
+    "title": "Rabi Season Crops",
+    "content": "Rabi crops grown in winter, sown October-November, harvested March-April. Major crops: wheat, barley, mustard, chickpea, lentil, pea, potato. Require cool growing period (10-25°C) and supplemental irrigation. Need 2-4 irrigations depending on rainfall. Crops are sensitive to frost at flowering stage. Best yields when sown at optimum time. Late sowing reduces yield significantly.",
+    "category": "weather",
+    "tags": ["rabi", "winter", "season", "wheat", "sardi"]
+  }
+]
+
