@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_profile.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#0F0F0F"
     android:padding="16dp">
 
     <LinearLayout
@@ -15,7 +17,7 @@
             android:id="@+id/profileAvatar"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:src="@drawable/ic_person"
+            android:src="@drawable/ic_govt"
             android:contentDescription="Profile avatar"
             android:layout_marginBottom="12dp"/>
 
@@ -23,6 +25,7 @@
             android:id="@+id/tvName"
             android:textStyle="bold"
             android:textSize="20sp"
+            android:textColor="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Name"/>
@@ -31,6 +34,7 @@
             android:id="@+id/tvLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="State, District, Village"
             android:layout_marginTop="8dp"/>
 
@@ -38,6 +42,7 @@
             android:id="@+id/tvLandSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="Total Land Size"
             android:layout_marginTop="8dp"/>
 
@@ -45,6 +50,7 @@
             android:id="@+id/tvSoilType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="Soil Type"
             android:layout_marginTop="8dp"/>
 
@@ -52,6 +58,7 @@
             android:id="@+id/tvPrimaryCrops"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="Primary Crops"
             android:layout_marginTop="8dp"/>
 
@@ -59,6 +66,7 @@
             android:id="@+id/tvLanguage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:text="Language Preference"
             android:layout_marginTop="8dp"/>
 
@@ -66,7 +74,14 @@
             android:id="@+id/btnEditProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#00D66C"
             android:text="Edit Profile"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="#1A1A1A"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:layout_marginTop="16dp"/>
     </LinearLayout>
 </ScrollView>

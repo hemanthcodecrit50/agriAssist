@@ -1,40 +1,56 @@
-// In: RegistrationActivity.kt
 package com.krishisakhi.farmassistant
 
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
-// ... other imports
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope // Import lifecycleScope
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
-import com.krishisakhi.farmassistant.db.AppDatabase
 import com.krishisakhi.farmassistant.data.FarmerProfile
-import kotlinx.coroutines.launch // Import launch
+import com.krishisakhi.farmassistant.db.AppDatabase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 class RegistrationActivity : AppCompatActivity() {
-    val name = findViewById<EditText>(R.id.etName)
-    val state = findViewById<EditText>(R.id.etState)
-    val district = findViewById<EditText>(R.id.etDistrict)
-    val village = findViewById<EditText>(R.id.etVillage)
-    val landStr = findViewById<EditText>(R.id.etLandSize)
-    val name = findViewById<EditText>(R.id.etName)
-    val name = findViewById<EditText>(R.id.etName)
+
+    private lateinit var etName: EditText
+    private lateinit var etState: EditText
+    private lateinit var etDistrict: EditText
+    private lateinit var etVillage: EditText
+    private lateinit var etLandSize: EditText
+    private lateinit var etSoilType: EditText
+    private lateinit var etCrop1: EditText
+    private lateinit var etCrop2: EditText
+    private lateinit var spinnerLanguage: Spinner
+    private lateinit var btnSubmit: Button
 
     private val prefsName = "farm_prefs"
     private val registeredKey = "is_registered"
 
-    // Get instances of Firebase Auth and your Room Database
     private val auth by lazy { FirebaseAuth.getInstance() }
-    private val db by lazy { AppDatabase.getDatabase(this) } // Database instance
+    private val db by lazy { AppDatabase.getDatabase(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
 
-        // ... (findViewById calls remain the same) ...
+        etName = findViewById(R.id.etName)
+        etState = findViewById(R.id.etState)
+        etDistrict = findViewById(R.id.etDistrict)
+        etVillage = findViewById(R.id.etVillage)
+        etLandSize = findViewById(R.id.etLandSize)
+        etSoilType = findViewById(R.id.etSoilType)
+        etCrop1 = findViewById(R.id.etCrop1)
+        etCrop2 = findViewById(R.id.etCrop2)
+        spinnerLanguage = findViewById(R.id.spinnerLanguage)
+        btnSubmit = findViewById(R.id.btnSubmit)
 
         spinnerLanguage.adapter = ArrayAdapter(
             this,
@@ -43,14 +59,12 @@ class RegistrationActivity : AppCompatActivity() {
         )
 
         btnSubmit.setOnClickListener {
-            // We'll now save to the Room database
-            if (validate()) saveToRoomDatabase()
+            if (validateInputs()) saveToRoomDatabase()
         }
     }
 
-    private fun validate(): Boolean {
-        // ... (This function remains unchanged) ...
-        val name = name.text.toString().trim()
+    private fun validateInputs(): Boolean {
+        val name = etName.text.toString().trim()
         val state = etState.text.toString().trim()
         val district = etDistrict.text.toString().trim()
         val village = etVillage.text.toString().trim()
@@ -58,32 +72,42 @@ class RegistrationActivity : AppCompatActivity() {
         val crop1 = etCrop1.text.toString().trim()
         val crop2 = etCrop2.text.toString().trim()
 
-        if (name.isEmpty()) { showToast("Name required"); return false }
-        if (state.isEmpty()) { showToast("State required"); return false }
-        if (district.isEmpty()) { showToast("District required"); return false }
-        if (village.isEmpty()) { showToast("Village required"); return false }
-        if (landStr.isEmpty()) { showToast("Land size required"); return false }
+        if (name.isEmpty()) { etName.error = "Name required"; etName.requestFocus(); return false }
+        if (state.isEmpty()) { etState.error = "State required"; etState.requestFocus(); return false }
+        if (district.isEmpty()) { etDistrict.error = "District required"; etDistrict.requestFocus(); return false }
+        if (village.isEmpty()) { etVillage.error = "Village required"; etVillage.requestFocus(); return false }
+        if (landStr.isEmpty()) { etLandSize.error = "Land size required"; etLandSize.requestFocus(); return false }
         val land = landStr.toDoubleOrNull()
-        if (land == null || land <= 0.0) { showToast("Enter valid land size"); return false }
-        if (etSoilType.text.toString().trim().isEmpty()) { showToast("Soil type required"); return false }
-        if (crop1.isEmpty() || crop2.isEmpty()) { showToast("Enter at least two primary crops"); return false }
+        if (land == null || land <= 0.0) { etLandSize.error = "Enter valid land size"; etLandSize.requestFocus(); return false }
+        if (etSoilType.text.toString().trim().isEmpty()) { etSoilType.error = "Soil type required"; etSoilType.requestFocus(); return false }
+        if (crop1.isEmpty() || crop2.isEmpty()) { etCrop1.error = "Enter two primary crops"; etCrop1.requestFocus(); return false }
+
         return true
     }
 
     private fun saveToRoomDatabase() {
         btnSubmit.isEnabled = false
-        val currentUser = auth.currentUser
 
-        // Get the phone number, it's crucial for the primary key
-        val phoneNumber = currentUser?.phoneNumber
+        val currentUser = auth.currentUser
+        var phoneNumber = currentUser?.phoneNumber
+        Log.d("RegistrationActivity", "Raw phone from auth: $phoneNumber")
         if (phoneNumber.isNullOrEmpty()) {
-            showToast("Error: Could not get phone number.")
+            Toast.makeText(this, "Error: Could not get phone number from authenticated user.", Toast.LENGTH_LONG).show()
+            btnSubmit.isEnabled = true
+            return
+        }
+
+        // Normalize phone to digits-only form used as DB key
+        val normalized = normalizePhoneToDigits(phoneNumber)
+        Log.d("RegistrationActivity", "Normalized phone: $normalized")
+        if (normalized == null) {
+            Toast.makeText(this, "Error: Could not normalize phone number.", Toast.LENGTH_LONG).show()
             btnSubmit.isEnabled = true
             return
         }
 
         val profile = FarmerProfile(
-            phoneNumber = phoneNumber, // Use phone number as the key
+            phoneNumber = normalized,
             name = etName.text.toString().trim(),
             state = etState.text.toString().trim(),
             district = etDistrict.text.toString().trim(),
@@ -94,43 +118,44 @@ class RegistrationActivity : AppCompatActivity() {
             languagePreference = spinnerLanguage.selectedItem.toString()
         )
 
-        // Use a coroutine to save data on a background thread
         lifecycleScope.launch {
             try {
-                db.farmerProfileDao().insertProfile(profile)
+                withContext(Dispatchers.IO) {
+                    db.farmerProfileDao().insertProfile(profile)
+                }
 
-                // mark registered in SharedPreferences
-                val prefs: SharedPreferences = getSharedPreferences(prefsName, MODE_PRIVATE)
+                // mark registered
+                val prefs = getSharedPreferences(prefsName, MODE_PRIVATE)
                 prefs.edit().putBoolean(registeredKey, true).apply()
 
-                showToast("Profile saved successfully")
-                startActivity(Intent(this@RegistrationActivity, ProfileActivity::class.java))
+                // Log all profiles to aid debugging
+                lifecycleScope.launch {
+                    val all = withContext(Dispatchers.IO) { db.farmerProfileDao().getAllProfiles() }
+                    Log.d("RegistrationActivity", "All saved profiles: $all")
+                }
+
+                Toast.makeText(this@RegistrationActivity, "Profile saved successfully", Toast.LENGTH_SHORT).show()
+
+                // Go to MainActivity (clear backstack) so user lands on the main screen
+                val intent = Intent(this@RegistrationActivity, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
                 finish()
             } catch (e: Exception) {
                 btnSubmit.isEnabled = true
-                showToast("Failed to save profile: ${e.message}")
+                Toast.makeText(this@RegistrationActivity, "Failed to save profile: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("RegistrationActivity", "Save failed", e)
             }
         }
     }
 
-    // This is how you would fetch a farmer's details by their phone number
-    private fun fetchFarmerProfile(phoneNumber: String) {
-        lifecycleScope.launch {
-            val farmer = db.farmerProfileDao().getProfileByPhone(phoneNumber)
-            if (farmer != null) {
-                // You have the farmer's details!
-                // You can now populate UI fields or pass this object to another activity
-                etName.setText(farmer.name)
-                etState.setText(farmer.state)
-                // ... and so on for other fields
-                showToast("Fetched details for ${farmer.name}")
-            } else {
-                showToast("No profile found for this number.")
-            }
-        }
+    // Normalize phone to digits-only string. If 10 digits are provided it prefixes '91'. Returns null if not enough digits.
+    private fun normalizePhoneToDigits(phone: String?): String? {
+        if (phone == null) return null
+        val digits = phone.filter { it.isDigit() }
+        if (digits.length == 10) return "91$digits"
+        if (digits.length >= 11) return digits // assume already includes country code
+        return null
     }
 
-    private fun showToast(msg: String) =
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }
-

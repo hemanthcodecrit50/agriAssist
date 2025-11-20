@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -41,8 +42,11 @@ class MainActivity : AppCompatActivity() {
     private var audioRecorder: AudioRecorder? = null
     private var currentDialog: Dialog? = null
 
+    private val db by lazy { com.krishisakhi.farmassistant.db.AppDatabase.getDatabase(this) }
+
     companion object {
         private const val PERMISSION_REQUEST_CODE = 100
+        private const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,12 +65,15 @@ class MainActivity : AppCompatActivity() {
 
         audioRecorder = AudioRecorder(this)
 
+        // Populate header with saved profile or fallback
+        loadAndShowProfile()
+
         // Initialize AI services
         speechToTextConverter = SpeechToTextConverter(this)
         enhancedAIService = EnhancedAIService(this, BuildConfig.GEMINI_API_KEY)
         textToSpeechPlayer = TextToSpeechPlayer(this)
         textToSpeechPlayer?.initialize {
-            Log.d("MainActivity", "Text-to-Speech initialized")
+            Log.d(TAG, "Text-to-Speech initialized")
         }
 
         // Initialize knowledge base in background
@@ -74,15 +81,68 @@ class MainActivity : AppCompatActivity() {
             val success = enhancedAIService?.initialize() ?: false
             withContext(Dispatchers.Main) {
                 if (success) {
-                    Log.d("MainActivity", "Knowledge base initialized successfully")
+                    Log.d(TAG, "Knowledge base initialized successfully")
                 } else {
-                    Log.e("MainActivity", "Failed to initialize knowledge base")
+                    Log.e(TAG, "Failed to initialize knowledge base")
                 }
             }
         }
 
         setupNotifications()
         setupQuickAccessButtons()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh header/profile in case user just saved their profile
+        loadAndShowProfile()
+    }
+
+    private fun loadAndShowProfile() {
+        val tvUserName = findViewById<TextView?>(R.id.tvUserName)
+        tvUserName?.text = getString(R.string.welcome_message)
+
+        var phone = auth.currentUser?.phoneNumber
+        Log.d(TAG, "Raw phone from auth in MainActivity: $phone")
+        if (phone.isNullOrEmpty()) {
+            Log.w(TAG, "No authenticated phone number available for current user")
+            return
+        }
+
+        // Normalize phone same as RegistrationActivity
+        val normalized = normalizePhoneToDigits(phone)
+        if (normalized == null) {
+            Log.w(TAG, "Could not normalize phone: $phone")
+            return
+        }
+        Log.d(TAG, "Normalized phone in MainActivity: $normalized")
+
+        lifecycleScope.launch {
+            val profile = withContext(Dispatchers.IO) {
+                try {
+                    db.farmerProfileDao().getProfileByPhone(normalized)
+                } catch (e: Exception) {
+                    Log.e(TAG, "DB query failed: ${e.message}")
+                    null
+                }
+            }
+
+            if (profile != null) {
+                Log.d(TAG, "Found profile for $normalized: ${profile.name}")
+                tvUserName?.text = profile.name
+            } else {
+                Log.d(TAG, "No profile found for phone $normalized")
+                tvUserName?.text = if (normalized.length >= 4) normalized.takeLast(4) else normalized
+            }
+        }
+    }
+
+    private fun normalizePhoneToDigits(phone: String?): String? {
+        if (phone == null) return null
+        val digits = phone.filter { it.isDigit() }
+        if (digits.length == 10) return "91$digits"
+        if (digits.length >= 11) return digits
+        return null
     }
 
     private fun setupNotifications() {
@@ -103,7 +163,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupQuickAccessButtons() {
         // Profile button
         findViewById<ImageButton>(R.id.profileButton).setOnClickListener {
-            showLogoutDialog()
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
         }
 
         // Ask Question button

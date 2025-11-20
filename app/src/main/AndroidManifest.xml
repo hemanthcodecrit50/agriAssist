@@ -26,9 +26,6 @@
             android:name=".RegistrationActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileForm"
-            android:exported="false" />
-        <activity
             android:name=".ProfileActivity"
             android:exported="false" /> <!-- Phone Authentication Activities -->
         <activity
@@ -71,6 +68,10 @@
             android:name=".AIResponseActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+        <!-- New registration screen for email/password sign-up -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
