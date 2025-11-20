@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +16,10 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.krishisakhi.farmassistant.db.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity : AppCompatActivity() {
@@ -103,11 +108,63 @@ class PhoneAuthActivity : AppCompatActivity() {
 
         // Check if user is already logged in
         if (auth.currentUser != null) {
-            // User is already authenticated, go directly to MainActivity
-            Log.d(TAG, "User already logged in: ${auth.currentUser?.phoneNumber}")
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
+            // Try to load authenticated choices layout by resource name. This avoids static R references when
+            // resource index may not be up-to-date for the static analyzer in this tool environment.
+            val layoutId = resources.getIdentifier("activity_authenticated_choices", "layout", packageName)
+            if (layoutId != 0) {
+                setContentView(layoutId)
+
+                val tvId = resources.getIdentifier("tvSignedInAs", "id", packageName)
+                val btnContinueId = resources.getIdentifier("btnContinue", "id", packageName)
+                val btnRegisterId = resources.getIdentifier("btnRegister", "id", packageName)
+                val btnProfileId = resources.getIdentifier("btnProfile", "id", packageName)
+
+                val tvSignedInAs = if (tvId != 0) findViewById<TextView>(tvId) else null
+                val btnContinue = if (btnContinueId != 0) findViewById<Button>(btnContinueId) else null
+                val btnRegister = if (btnRegisterId != 0) findViewById<Button>(btnRegisterId) else null
+                val btnProfile = if (btnProfileId != 0) findViewById<Button>(btnProfileId) else null
+
+                val phoneRaw = auth.currentUser?.phoneNumber ?: "Unknown"
+                val name = auth.currentUser?.displayName ?: "Unknown"
+                tvSignedInAs?.text = "Signed in as $name"
+
+                btnRegister?.setOnClickListener {
+                    val intent = Intent(this, RegistrationActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+
+                btnProfile?.setOnClickListener {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                }
+
+                btnContinue?.setOnClickListener {
+                    it.isEnabled = false
+                    (it as? Button)?.text = "Checking..."
+                    lifecycleScope.launch {
+                        val db = AppDatabase.getDatabase(applicationContext)
+                        val normalized = normalizePhoneToDigits(phoneRaw)
+                        val profile = withContext(Dispatchers.IO) {
+                            if (normalized.isNullOrBlank()) null else db.farmerProfileDao().getProfileByPhone(normalized)
+                        }
+
+                        val intent = if (profile != null) {
+                            Intent(this@PhoneAuthActivity, MainActivity::class.java)
+                        } else {
+                            Intent(this@PhoneAuthActivity, RegistrationActivity::class.java)
+                        }
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+
+                return
+            } else {
+                // If layout not found for some reason, fall back to normal auth screen
+                Log.w(TAG, "Authenticated choices layout not found; falling back to phone auth layout")
+            }
         }
 
         setContentView(R.layout.activity_phone_auth)
@@ -164,8 +221,25 @@ class PhoneAuthActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success
                     Toast.makeText(this, "Authentication successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+
+                    // After sign-in, check Room DB for profile and navigate accordingly
+                    val phoneRaw = auth.currentUser?.phoneNumber
+                    lifecycleScope.launch {
+                        val db = AppDatabase.getDatabase(applicationContext)
+                        val normalized = normalizePhoneToDigits(phoneRaw)
+                        val profile = withContext(Dispatchers.IO) {
+                            if (normalized.isNullOrBlank()) null else db.farmerProfileDao().getProfileByPhone(normalized)
+                        }
+
+                        val intent = if (profile != null) {
+                            Intent(this@PhoneAuthActivity, MainActivity::class.java)
+                        } else {
+                            Intent(this@PhoneAuthActivity, RegistrationActivity::class.java)
+                        }
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                        finish()
+                    }
                 } else {
                     // Sign in failed
                     Toast.makeText(
@@ -176,5 +250,13 @@ class PhoneAuthActivity : AppCompatActivity() {
                 }
             }
     }
-}
 
+    // Normalize phone to digits-only string. If 10 digits are provided it prefixes '91'. Returns null if not enough digits.
+    private fun normalizePhoneToDigits(phone: String?): String? {
+        if (phone == null) return null
+        val digits = phone.filter { it.isDigit() }
+        if (digits.length == 10) return "91$digits"
+        if (digits.length >= 11) return digits // assume already includes country code
+        return null
+    }
+}

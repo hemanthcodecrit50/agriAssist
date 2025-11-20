@@ -63,9 +63,18 @@ class OtpVerificationActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success
                     Toast.makeText(this, "Authentication successful!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
+
+                    // After successful auth decide where to go: profile registration or main
+                    val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
+                    val isRegistered = prefs.getBoolean("is_registered", false)
+
+                    val nextIntent = if (isRegistered) {
+                        Intent(this, MainActivity::class.java)
+                    } else {
+                        Intent(this, RegistrationActivity::class.java)
+                    }
+                    nextIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(nextIntent)
                     finish()
                 } else {
                     // Sign in failed
@@ -79,4 +88,3 @@ class OtpVerificationActivity : AppCompatActivity() {
             }
     }
 }
-
