@@ -18,6 +18,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProfileActivity : AppCompatActivity() {
+
+    private lateinit var tvName: TextView
+    private lateinit var tvLocation: TextView
+    private lateinit var tvLandSize: TextView
+    private lateinit var tvSoilType: TextView
+    private lateinit var tvPrimaryCrops: TextView
+    private lateinit var tvLanguage: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,12 +44,12 @@ class ProfileActivity : AppCompatActivity() {
             insets
         }
 
-        val tvName = findViewById<TextView>(R.id.tvName)
-        val tvLocation = findViewById<TextView>(R.id.tvLocation)
-        val tvLandSize = findViewById<TextView>(R.id.tvLandSize)
-        val tvSoilType = findViewById<TextView>(R.id.tvSoilType)
-        val tvPrimaryCrops = findViewById<TextView>(R.id.tvPrimaryCrops)
-        val tvLanguage = findViewById<TextView>(R.id.tvLanguage)
+        tvName = findViewById(R.id.tvName)
+        tvLocation = findViewById(R.id.tvLocation)
+        tvLandSize = findViewById(R.id.tvLandSize)
+        tvSoilType = findViewById(R.id.tvSoilType)
+        tvPrimaryCrops = findViewById(R.id.tvPrimaryCrops)
+        tvLanguage = findViewById(R.id.tvLanguage)
         val btnEditProfile = findViewById<Button>(R.id.btnEditProfile)
 
         val btnLogout = Button(this).apply {
@@ -52,10 +60,38 @@ class ProfileActivity : AppCompatActivity() {
         // add logout button below edit profile
         (btnEditProfile.parent as? android.view.ViewGroup)?.addView(btnLogout)
 
+        // Load profile on create
+        loadAndDisplayProfile()
+
+        btnEditProfile.setOnClickListener {
+            // Open registration form where user can edit (reuse RegistrationActivity)
+            startActivity(Intent(this, RegistrationActivity::class.java))
+        }
+
+        btnLogout.setOnClickListener {
+            // Sign out and clear registration flag
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+            val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
+            prefs.edit().putBoolean("is_registered", false).apply()
+
+            val intent = Intent(this, PhoneAuthActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Reload profile when returning from edit (RegistrationActivity)
+        loadAndDisplayProfile()
+    }
+
+    private fun loadAndDisplayProfile() {
         val auth = FirebaseAuth.getInstance()
         val phoneRaw = auth.currentUser?.phoneNumber
 
-        // Load profile from Room and populate UI
         lifecycleScope.launch {
             try {
                 val db = AppDatabase.getDatabase(applicationContext)
@@ -83,23 +119,6 @@ class ProfileActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("ProfileActivity", "Failed to load profile", e)
             }
-        }
-
-        btnEditProfile.setOnClickListener {
-            // Open registration form where user can edit (reuse RegistrationActivity)
-            startActivity(Intent(this, RegistrationActivity::class.java))
-        }
-
-        btnLogout.setOnClickListener {
-            // Sign out and clear registration flag
-            auth.signOut()
-            val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
-            prefs.edit().putBoolean("is_registered", false).apply()
-
-            val intent = Intent(this, PhoneAuthActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
         }
     }
 

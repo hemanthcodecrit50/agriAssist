@@ -1,7 +1,6 @@
 package com.krishisakhi.farmassistant
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -14,6 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.krishisakhi.farmassistant.data.FarmerProfile
 import com.krishisakhi.farmassistant.db.AppDatabase
+import com.krishisakhi.farmassistant.rag.EmbeddingService
+import com.krishisakhi.farmassistant.rag.VectorDatabasePersistent
+import com.krishisakhi.farmassistant.utils.FarmerProfileSerializer
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +91,7 @@ class RegistrationActivity : AppCompatActivity() {
         btnSubmit.isEnabled = false
 
         val currentUser = auth.currentUser
-        var phoneNumber = currentUser?.phoneNumber
+        val phoneNumber = currentUser?.phoneNumber
         Log.d("RegistrationActivity", "Raw phone from auth: $phoneNumber")
         if (phoneNumber.isNullOrEmpty()) {
             Toast.makeText(this, "Error: Could not get phone number from authenticated user.", Toast.LENGTH_LONG).show()
@@ -120,19 +122,68 @@ class RegistrationActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
+                // 1. Save raw profile to Room database
                 withContext(Dispatchers.IO) {
                     db.farmerProfileDao().insertProfile(profile)
                 }
+                Log.d("RegistrationActivity", "Profile saved to Room database")
 
-                // mark registered
+                // 2. Convert profile to natural language text using FarmerProfileSerializer
+                val profileText = FarmerProfileSerializer.toEmbeddingSummary(profile)
+                Log.d("RegistrationActivity", "Profile serialized to text (${profileText.length} chars)")
+
+                // 3. Generate embedding using EmbeddingService
+                val embeddingService = EmbeddingService(this@RegistrationActivity)
+                val embedding = withContext(Dispatchers.IO) {
+                    embeddingService.generateEmbedding(profileText)
+                }
+
+                if (embedding != null) {
+                    Log.d("RegistrationActivity", "Embedding generated (${embedding.size} dimensions)")
+
+                    // 4. Store vector in persistent Vector DB
+                    val vectorDb = VectorDatabasePersistent(this@RegistrationActivity)
+                    val vectorId = "farmer_profile_${normalized}"
+
+                    val metadata = mapOf(
+                        "type" to "farmer_profile",
+                        "phoneNumber" to normalized,
+                        "name" to profile.name,
+                        "state" to profile.state,
+                        "district" to profile.district,
+                        "village" to profile.village,
+                        "landSize" to profile.totalLandSize.toString(),
+                        "soilType" to profile.soilType,
+                        "crops" to profile.primaryCrops.joinToString(","),
+                        "language" to profile.languagePreference,
+                        "timestamp" to System.currentTimeMillis().toString()
+                    )
+
+                    val vectorInserted = withContext(Dispatchers.IO) {
+                        vectorDb.insertVector(
+                            id = vectorId,
+                            embedding = embedding,
+                            metadata = metadata,
+                            farmerId = normalized
+                        )
+                    }
+
+                    if (vectorInserted) {
+                        Log.d("RegistrationActivity", "Farmer profile vector created successfully: $vectorId")
+                    } else {
+                        Log.w("RegistrationActivity", "Failed to insert farmer profile vector")
+                    }
+                } else {
+                    Log.e("RegistrationActivity", "Failed to generate embedding for profile")
+                }
+
+                // Mark as registered
                 val prefs = getSharedPreferences(prefsName, MODE_PRIVATE)
                 prefs.edit().putBoolean(registeredKey, true).apply()
 
                 // Log all profiles to aid debugging
-                lifecycleScope.launch {
-                    val all = withContext(Dispatchers.IO) { db.farmerProfileDao().getAllProfiles() }
-                    Log.d("RegistrationActivity", "All saved profiles: $all")
-                }
+                val all = withContext(Dispatchers.IO) { db.farmerProfileDao().getAllProfiles() }
+                Log.d("RegistrationActivity", "All saved profiles: $all")
 
                 Toast.makeText(this@RegistrationActivity, "Profile saved successfully", Toast.LENGTH_SHORT).show()
 
