@@ -60,6 +60,27 @@ class RegistrationActivity : AppCompatActivity() {
             listOf("English", "Hindi", "Local")
         )
 
+        // Prefill fields if intent contains extras from ProfileActivity
+        intent?.let { i ->
+            if (i.hasExtra("prefill_name")) etName.setText(i.getStringExtra("prefill_name"))
+            if (i.hasExtra("prefill_state")) etState.setText(i.getStringExtra("prefill_state"))
+            if (i.hasExtra("prefill_district")) etDistrict.setText(i.getStringExtra("prefill_district"))
+            if (i.hasExtra("prefill_village")) etVillage.setText(i.getStringExtra("prefill_village"))
+            if (i.hasExtra("prefill_landSize")) etLandSize.setText(i.getDoubleExtra("prefill_landSize", 0.0).toString())
+            if (i.hasExtra("prefill_soilType")) etSoilType.setText(i.getStringExtra("prefill_soilType"))
+            if (i.hasExtra("prefill_crop1")) etCrop1.setText(i.getStringExtra("prefill_crop1"))
+            if (i.hasExtra("prefill_crop2")) etCrop2.setText(i.getStringExtra("prefill_crop2"))
+            if (i.hasExtra("prefill_language")) {
+                val lang = i.getStringExtra("prefill_language")
+                val idx = when (lang) {
+                    "English" -> 0
+                    "Hindi" -> 1
+                    else -> 2
+                }
+                spinnerLanguage.setSelection(idx)
+            }
+        }
+
         btnSubmit.setOnClickListener {
             if (validateInputs()) saveToRoomDatabase()
         }
