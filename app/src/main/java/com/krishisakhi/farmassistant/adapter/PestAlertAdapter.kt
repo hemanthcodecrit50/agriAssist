@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.krishisakhi.farmassistant.R
 import com.krishisakhi.farmassistant.data.PestAlert
@@ -20,7 +21,6 @@ class PestAlertAdapter(private val items: MutableList<PestAlert>) : RecyclerView
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
-        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,11 +30,12 @@ class PestAlertAdapter(private val items: MutableList<PestAlert>) : RecyclerView
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val pestAlert = items[position] as PestAlert
+        val pestAlert = items[position]
+        val ctx = holder.itemView.context
 
         // Set title and subtitle
         holder.itemTitle.text = pestAlert.pestName
-        holder.itemSubtitle.text = "${pestAlert.cropType} • ${pestAlert.description}"
+        holder.itemSubtitle.text = ctx.getString(R.string.pest_subtitle_format, pestAlert.cropType, pestAlert.description)
         holder.itemTimestamp.text = pestAlert.dateReported
 
         // Show severity badge
@@ -64,17 +65,9 @@ class PestAlertAdapter(private val items: MutableList<PestAlert>) : RecyclerView
 
         // Click listener for detail view
         holder.itemView.setOnClickListener {
-            // TODO: Navigate to detail screen or show dialog
-            // Example:
-            // val context = holder.itemView.context
-            // val intent = Intent(context, PestAlertDetailActivity::class.java)
-            // intent.putExtra("PEST_NAME", pestAlert.pestName)
-            // context.startActivity(intent)
-
-            // OR show a dialog with full details
             android.widget.Toast.makeText(
                 holder.itemView.context,
-                "Symptoms: ${pestAlert.symptoms}\n\nTreatment: ${pestAlert.treatment}",
+                ctx.getString(R.string.pest_detail_format, pestAlert.symptoms, pestAlert.treatment),
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }

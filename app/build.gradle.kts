@@ -75,6 +75,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-safetynet:18.0.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+// Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
     // Gemini AI SDK
     implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
 

@@ -11,7 +11,7 @@
         android:id="@+id/tvSignedInAs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Signed in"
+        android:text="@string/signed_in"
         android:textSize="18sp"
         android:textColor="#FFFFFF"
         android:paddingBottom="16dp" />
@@ -20,22 +20,22 @@
         android:id="@+id/btnContinue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#00D66C"
+        android:backgroundTint="@color/primary_green"
         android:text="Continue to App"/>
 
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Profile"
-        android:backgroundTint="#00D66C"
+        android:text="@string/update_profile"
+        android:backgroundTint="@color/primary_green"
         android:layout_marginTop="12dp" />
 
     <Button
         android:id="@+id/btnProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View Profile"
-        android:backgroundTint="#00D66C"
+        android:text="@string/view_profile"
+        android:backgroundTint="@color/primary_green"
         android:layout_marginTop="12dp" />
 </LinearLayout>

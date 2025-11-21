@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.krishisakhi.farmassistant.R
 import com.krishisakhi.farmassistant.data.GovtScheme
@@ -20,7 +21,6 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
-        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,12 +30,13 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val scheme = items[position] as GovtScheme
+        val scheme = items[position]
+        val ctx = holder.itemView.context
 
-        // Set title and subtitle
+        // Set title and subtitle using string resources
         holder.itemTitle.text = scheme.schemeName
-        holder.itemSubtitle.text = "${scheme.authority}\n${scheme.description}"
-        holder.itemTimestamp.text = "Deadline: ${scheme.deadline}"
+        holder.itemSubtitle.text = ctx.getString(R.string.scheme_subtitle_format, scheme.authority, scheme.description)
+        holder.itemTimestamp.text = ctx.getString(R.string.deadline_format, scheme.deadline)
 
         // Show status badge
         holder.itemBadge.visibility = View.VISIBLE
@@ -69,21 +70,10 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
 
         // Click listener
         holder.itemView.setOnClickListener {
-            // TODO: Navigate to scheme detail activity
-            // Example:
-            // val context = holder.itemView.context
-            // val intent = Intent(context, SchemeDetailActivity::class.java)
-            // intent.putExtra("SCHEME_NAME", scheme.schemeName)
-            // intent.putExtra("SCHEME_DESCRIPTION", scheme.description)
-            // intent.putExtra("SCHEME_BENEFITS", scheme.benefits)
-            // intent.putExtra("SCHEME_ELIGIBILITY", scheme.eligibility.joinToString("\n• "))
-            // context.startActivity(intent)
-
-            // OR show a dialog with details
             val eligibilityText = scheme.eligibility.joinToString("\n• ", "• ")
             android.widget.Toast.makeText(
                 holder.itemView.context,
-                "Benefits: ${scheme.benefits}\n\nEligibility:\n$eligibilityText",
+                ctx.getString(R.string.scheme_detail_format, scheme.benefits, eligibilityText),
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
@@ -92,24 +82,4 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
     override fun getItemCount() = items.size
 }
 
-// ============================================================================
-// QUICK REFERENCE FOR COLORS
-// ============================================================================
-/*
-PRIMARY COLORS:
-- Primary Green: #00D66C
-- Dark Background: #0F0F0F
-- Card Background: #1A1A1A
-
-TEXT COLORS:
-- Text Primary: #FFFFFF
-- Text Secondary: #9CA3AF
-- Text Tertiary: #6B7280
-
-STATUS/SEVERITY COLORS:
-- Red (High/Error): #EF4444
-- Orange (Medium/Warning): #F97316
-- Yellow (Low/Info): #FDE047
-- Gray (Closed/Inactive): #6B7280
-- Green (Active/Success): #00D66C
-*/
+/* NOTE: color reference comments removed to avoid duplication; use res/values/colors.xml */

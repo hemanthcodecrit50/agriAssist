@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="#1A1A1A"
+    app:cardBackgroundColor="@color/black"
     app:cardCornerRadius="12dp"
     app:cardElevation="0dp"
     android:clickable="true"
@@ -23,7 +23,7 @@
             android:id="@+id/statusIndicator"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="#00D66C"
+            android:background="@color/primary_green"
             android:layout_marginEnd="12dp"
             android:visibility="gone" />
 
@@ -33,7 +33,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_weather"
-            android:contentDescription="Item icon"
+            android:contentDescription="@string/item_icon_desc"
             android:visibility="gone"
             android:layout_marginEnd="12dp"
             android:padding="8dp" />
@@ -74,8 +74,8 @@
                 android:id="@+id/itemBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Badge/Tag"
-                android:textColor="#00D66C"
+                android:text="@string/badge_tag"
+                android:textColor="@color/primary_green"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginTop="6dp"
@@ -123,7 +123,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_chevron_right"
-                android:contentDescription="View details" />
+                android:contentDescription="@string/view_details_desc" />
         </LinearLayout>
 
     </LinearLayout>

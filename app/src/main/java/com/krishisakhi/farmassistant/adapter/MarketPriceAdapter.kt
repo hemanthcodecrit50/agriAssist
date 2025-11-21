@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.krishisakhi.farmassistant.R
 import com.krishisakhi.farmassistant.data.MarketPrice
+import java.util.Locale
 
 class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : RecyclerView.Adapter<MarketPriceAdapter.ViewHolder>() {
 
@@ -20,7 +22,6 @@ class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : Recycler
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
-        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,20 +31,21 @@ class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : Recycler
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val marketPrice = items[position] as MarketPrice
+        val marketPrice = items[position]
+        val ctx = holder.itemView.context
 
-        // Set title and subtitle
+        // Set title and subtitle using resources
         holder.itemTitle.text = marketPrice.commodityName
-        holder.itemSubtitle.text = "${marketPrice.marketName} • ${marketPrice.category}"
+        holder.itemSubtitle.text = ctx.getString(R.string.market_subtitle_format, marketPrice.marketName, marketPrice.category)
         holder.itemTimestamp.text = marketPrice.lastUpdated
 
         // Show current price
         holder.itemValue.visibility = View.VISIBLE
-        holder.itemValue.text = "₹${marketPrice.currentPrice.toInt()}/${marketPrice.unit}"
+        holder.itemValue.text = ctx.getString(R.string.price_unit_format, marketPrice.currentPrice.toInt(), marketPrice.unit)
 
         // Calculate and show price change badge
         holder.itemBadge.visibility = View.VISIBLE
-        val changePercentage = (marketPrice.currentPrice-marketPrice.previousPrice)/marketPrice.previousPrice*100
+        val changePercentage = (marketPrice.currentPrice - marketPrice.previousPrice) / marketPrice.previousPrice * 100
 
         if (changePercentage > 0) {
             holder.itemBadge.text = "↑ +${String.format("%.1f", changePercentage)}%"
@@ -62,10 +64,9 @@ class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : Recycler
 
         // Click listener
         holder.itemView.setOnClickListener {
-            // TODO: Show price trend or more details
             android.widget.Toast.makeText(
                 holder.itemView.context,
-                "Previous: ₹${marketPrice.previousPrice.toInt()}\nCurrent: ₹${marketPrice.currentPrice.toInt()}\nChange: ₹${changePercentage.toInt()}",
+                ctx.getString(R.string.price_detail_format, marketPrice.previousPrice.toInt(), marketPrice.currentPrice.toInt(), changePercentage.toInt()),
                 android.widget.Toast.LENGTH_LONG
             ).show()
         }
