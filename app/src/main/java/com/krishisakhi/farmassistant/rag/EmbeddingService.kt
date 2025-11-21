@@ -34,9 +34,17 @@ class EmbeddingService(private val context: Context) {
             val words = processedText.split("\\s+".toRegex())
             val wordFrequency = words.groupingBy { it }.eachCount()
 
+            // Important agricultural terms get higher weight
+            val importantTerms = setOf(
+                "rice", "wheat", "cotton", "maize", "potato", "tomato",
+                "pest", "disease", "fertilizer", "irrigation", "soil",
+                "kharif", "rabi", "monsoon", "winter", "seed", "harvest",
+                "yield", "crop", "farming", "cultivation", "nutrient"
+            )
+
             // Generate embedding using word hashing and frequency weighting
             for ((word, freq) in wordFrequency) {
-                if (word.isBlank()) continue
+                if (word.isBlank() || word.length < 2) continue
 
                 // Multiple hash positions for better distribution
                 val hash1 = hashToIndex(word, 0)
@@ -44,7 +52,12 @@ class EmbeddingService(private val context: Context) {
                 val hash3 = hashToIndex(word, 2)
 
                 // Weight by frequency (simple TF-IDF approximation)
-                val weight = (1.0 + Math.log(freq.toDouble())).toFloat()
+                var weight = (1.0 + Math.log(freq.toDouble())).toFloat()
+
+                // Boost weight for important agricultural terms
+                if (importantTerms.contains(word)) {
+                    weight *= 1.5f
+                }
 
                 embedding[hash1] += weight
                 embedding[hash2] += weight * 0.7f
@@ -63,14 +76,54 @@ class EmbeddingService(private val context: Context) {
         }
     }
 
+    // Agricultural term synonyms for better semantic understanding
+    private val synonymMap = mapOf(
+        "paddy" to "rice",
+        "gehu" to "wheat",
+        "dhan" to "rice",
+        "makka" to "maize",
+        "corn" to "maize",
+        "tamatar" to "tomato",
+        "aloo" to "potato",
+        "kapas" to "cotton",
+        "sarson" to "mustard",
+        "chana" to "chickpea",
+        "gram" to "chickpea",
+        "insect" to "pest",
+        "bug" to "pest",
+        "disease" to "pest",
+        "kharif" to "monsoon",
+        "rabi" to "winter",
+        "cultivation" to "farming",
+        "crop" to "farming",
+        "fertilizer" to "nutrient",
+        "manure" to "nutrient",
+        "pesticide" to "chemical",
+        "herbicide" to "chemical"
+    )
+
     /**
      * Preprocess text for embedding generation
+     * Expands synonyms for better agricultural term matching
      */
     private fun preprocessText(text: String): String {
-        return text.lowercase()
+        var processed = text.lowercase()
             .replace("[^a-zA-Z0-9\\s]".toRegex(), " ")
             .replace("\\s+".toRegex(), " ")
             .trim()
+
+        // Expand synonyms
+        val words = processed.split(" ")
+        val expandedWords = mutableListOf<String>()
+        for (word in words) {
+            expandedWords.add(word)
+            // Add synonym if exists
+            synonymMap[word]?.let { synonym ->
+                expandedWords.add(synonym)
+            }
+        }
+
+        return expandedWords.joinToString(" ")
     }
 
     /**

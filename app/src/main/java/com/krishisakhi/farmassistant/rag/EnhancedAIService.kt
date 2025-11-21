@@ -123,16 +123,21 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
      */
     private suspend fun retrieveAndMergeVectors(query: String): List<EnhancedSearchResult> = withContext(Dispatchers.IO) {
         try {
+            Log.d(TAG, "Generating embedding for query: ${query.take(50)}...")
+
             // Generate query embedding once
             val queryEmbedding = embeddingService.generateEmbedding(query)
 
-            if (queryEmbedding == null) {
-                Log.e(TAG, "Failed to generate query embedding")
+            if (queryEmbedding == null || queryEmbedding.isEmpty()) {
+                Log.e(TAG, "Failed to generate query embedding or embedding is empty")
                 return@withContext emptyList()
             }
 
-            // Get current farmer's phone number
+            Log.d(TAG, "Query embedding generated successfully (dimension: ${queryEmbedding.size})")
+
+            // Get current farmer's UID (FIXED: now returns UID instead of phone)
             val farmerId = getCurrentFarmerId()
+            Log.d(TAG, "Current farmer UID for personalization: ${farmerId ?: "none (guest user)"}")
 
             // Parallel retrieval from different sources
             val personalizedResultsDeferred = async {
@@ -147,8 +152,8 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
             val personalizedResults = personalizedResultsDeferred.await()
             val generalResults = generalResultsDeferred.await()
 
-            Log.d(TAG, "Found ${personalizedResults.size} personalized vectors")
-            Log.d(TAG, "Found ${generalResults.size} general knowledge vectors")
+            Log.d(TAG, "Found ${personalizedResults.size} personalized vectors (relevance scores: ${personalizedResults.map { String.format("%.2f", it.score) }})")
+            Log.d(TAG, "Found ${generalResults.size} general knowledge vectors (relevance scores: ${generalResults.map { String.format("%.2f", it.score) }})")
 
             // Merge and sort by similarity score (personalized get slight boost)
             mergeAndSortResults(personalizedResults, generalResults)
@@ -167,18 +172,23 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
         farmerId: String?
     ): List<EnhancedSearchResult> = withContext(Dispatchers.IO) {
         try {
-            if (farmerId == null) {
-                Log.d(TAG, "No farmer ID available, skipping personalized vectors")
+            if (farmerId == null || farmerId.isEmpty()) {
+                Log.d(TAG, "No farmer UID available, skipping personalized vectors")
                 return@withContext emptyList()
             }
 
-            // Search for farmer-specific vectors
+            Log.d(TAG, "Searching for personalized vectors for farmer UID: $farmerId")
+
+            // Search for farmer-specific vectors using BOTH farmerId filter AND sourceType filter
             val results = vectorDb.searchSimilar(
                 queryEmbedding = queryEmbedding,
-                topK = 2, // Get top 2 personalized results
-                minScore = MIN_SIMILARITY_SCORE,
-                farmerIdFilter = farmerId
+                topK = 3, // Get top 3 personalized results
+                minScore = MIN_SIMILARITY_SCORE * 0.8f, // Lower threshold for personalized content
+                farmerIdFilter = farmerId,
+                sourceTypeFilter = "farmer_profile" // Only get farmer profile vectors
             )
+
+            Log.d(TAG, "Retrieved ${results.size} personalized vectors for farmer")
 
             // Convert to EnhancedSearchResult
             results.mapNotNull { result ->
@@ -210,36 +220,42 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
         queryEmbedding: FloatArray
     ): List<EnhancedSearchResult> = withContext(Dispatchers.IO) {
         try {
-            // Search for general knowledge vectors (farmerId = null)
+            Log.d(TAG, "Searching for general knowledge vectors")
+
+            // Search for general knowledge vectors, EXCLUDING farmer profiles
             val results = vectorDb.searchSimilar(
                 queryEmbedding = queryEmbedding,
                 topK = DEFAULT_TOP_K, // Get top 5 general results
                 minScore = MIN_SIMILARITY_SCORE,
-                farmerIdFilter = null // No filter to get all including general
+                farmerIdFilter = null, // No farmer filter (get from all users)
+                excludeSourceType = "farmer_profile" // Exclude farmer profiles
             )
 
-            // Filter to only general knowledge (where type != farmer_profile)
-            // and convert to EnhancedSearchResult
+            Log.d(TAG, "Retrieved ${results.size} general knowledge vectors")
+
+            // Convert to EnhancedSearchResult
             results.mapNotNull { result ->
                 try {
                     val metadata = result.metadata
                     val type = metadata.optString("type", "general")
+                    val title = metadata.optString("title", "Knowledge Entry")
+                    val content = metadata.optString("content", "")
 
-                    // Skip farmer profile vectors (we get those separately)
-                    if (type == "farmer_profile") {
+                    if (content.isEmpty()) {
+                        Log.w(TAG, "Skipping vector ${result.id} - empty content")
                         return@mapNotNull null
                     }
 
                     EnhancedSearchResult(
                         id = result.id,
-                        title = metadata.optString("title", "Knowledge Entry"),
-                        content = metadata.optString("content", ""),
+                        title = title,
+                        content = content,
                         type = type,
                         score = result.score,
                         farmerId = null
                     )
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error parsing general vector result", e)
+                    Log.e(TAG, "Error parsing general vector result ${result.id}", e)
                     null
                 }
             }
@@ -272,31 +288,21 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
     }
 
     /**
-     * Get current farmer's ID (normalized phone number)
+     * Get current farmer's UID (Firebase UID)
+     * FIXED: Now returns UID instead of phone number to match FarmerProfile primary key
      */
     private fun getCurrentFarmerId(): String? {
         return try {
             val auth = FirebaseAuth.getInstance()
-            val phoneRaw = auth.currentUser?.phoneNumber
-            normalizePhoneToDigits(phoneRaw)
+            val uid = auth.currentUser?.uid
+            Log.d(TAG, "Current farmer UID: $uid")
+            uid
         } catch (e: Exception) {
             Log.e(TAG, "Error getting current farmer ID", e)
             null
         }
     }
 
-    /**
-     * Normalize phone number to digits-only format
-     */
-    private fun normalizePhoneToDigits(phone: String?): String? {
-        if (phone == null) return null
-        val digits = phone.filter { it.isDigit() }
-        return when {
-            digits.length == 10 -> "91$digits"
-            digits.length >= 11 -> digits
-            else -> null
-        }
-    }
 
     /**
      * Extract content from farmer profile metadata

@@ -143,13 +143,19 @@ class PhoneAuthActivity : AppCompatActivity() {
                     it.isEnabled = false
                     (it as? Button)?.text = "Checking..."
                     lifecycleScope.launch {
-                        val db = AppDatabase.getDatabase(applicationContext)
-                        val normalized = normalizePhoneToDigits(phoneRaw)
-                        val profile = withContext(Dispatchers.IO) {
-                            if (normalized.isNullOrBlank()) null else db.farmerProfileDao().getProfileByPhone(normalized)
+                        val uid = auth.currentUser?.uid
+                        val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(applicationContext)
+
+                        // Check if profile exists in Firestore
+                        val profileExists = if (uid != null) {
+                            syncManager.profileExistsInFirestore(uid)
+                        } else {
+                            false
                         }
 
-                        val intent = if (profile != null) {
+                        val intent = if (profileExists && uid != null) {
+                            // Sync profile from Firestore to Room
+                            syncManager.syncOnLogin(uid)
                             Intent(this@PhoneAuthActivity, MainActivity::class.java)
                         } else {
                             Intent(this@PhoneAuthActivity, RegistrationActivity::class.java)
@@ -222,23 +228,30 @@ class PhoneAuthActivity : AppCompatActivity() {
                     // Sign in success
                     Toast.makeText(this, "Authentication successful", Toast.LENGTH_SHORT).show()
 
-                    // After sign-in, check Room DB for profile and navigate accordingly
-                    val phoneRaw = auth.currentUser?.phoneNumber
-                    lifecycleScope.launch {
-                        val db = AppDatabase.getDatabase(applicationContext)
-                        val normalized = normalizePhoneToDigits(phoneRaw)
-                        val profile = withContext(Dispatchers.IO) {
-                            if (normalized.isNullOrBlank()) null else db.farmerProfileDao().getProfileByPhone(normalized)
-                        }
+                    // After successful Firebase Auth, check Firestore for user profile
+                    val uid = auth.currentUser?.uid
 
-                        val intent = if (profile != null) {
-                            Intent(this@PhoneAuthActivity, MainActivity::class.java)
-                        } else {
-                            Intent(this@PhoneAuthActivity, RegistrationActivity::class.java)
+                    if (uid != null) {
+                        lifecycleScope.launch {
+                            val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(applicationContext)
+
+                            // Check if profile exists in Firestore
+                            val profileExists = syncManager.profileExistsInFirestore(uid)
+
+                            val intent = if (profileExists) {
+                                // Profile exists - sync from Firestore to Room
+                                syncManager.syncOnLogin(uid)
+                                Intent(this@PhoneAuthActivity, MainActivity::class.java)
+                            } else {
+                                // No profile - go to registration
+                                Intent(this@PhoneAuthActivity, RegistrationActivity::class.java)
+                            }
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            finish()
                         }
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                        finish()
+                    } else {
+                        Toast.makeText(this, "Error: Could not get user UID", Toast.LENGTH_LONG).show()
                     }
                 } else {
                     // Sign in failed

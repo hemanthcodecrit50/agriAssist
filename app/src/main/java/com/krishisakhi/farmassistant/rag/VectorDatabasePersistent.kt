@@ -34,6 +34,7 @@ class VectorDatabasePersistent(context: Context) {
     private data class VectorCacheEntry(
         val id: String,
         val farmerId: String?,
+        val sourceType: String,
         val embedding: FloatArray,
         val metadata: JSONObject
     ) {
@@ -45,6 +46,7 @@ class VectorDatabasePersistent(context: Context) {
 
             if (id != other.id) return false
             if (farmerId != other.farmerId) return false
+            if (sourceType != other.sourceType) return false
             if (!embedding.contentEquals(other.embedding)) return false
 
             return true
@@ -53,6 +55,7 @@ class VectorDatabasePersistent(context: Context) {
         override fun hashCode(): Int {
             var result = id.hashCode()
             result = 31 * result + (farmerId?.hashCode() ?: 0)
+            result = 31 * result + sourceType.hashCode()
             result = 31 * result + embedding.contentHashCode()
             return result
         }
@@ -86,11 +89,13 @@ class VectorDatabasePersistent(context: Context) {
                 try {
                     val embedding = VectorSerializer.byteArrayToFloatArray(entry.vectorBlob)
                     val metadata = JSONObject(entry.metadataJson)
+                    val sourceType = entry.sourceType ?: "general"
 
                     vectorCache.add(
                         VectorCacheEntry(
                             id = entry.id,
                             farmerId = entry.farmerId,
+                            sourceType = sourceType,
                             embedding = embedding,
                             metadata = metadata
                         )
@@ -100,7 +105,7 @@ class VectorDatabasePersistent(context: Context) {
                 }
             }
 
-            Log.d(TAG, "Loaded ${vectorCache.size} vectors into memory cache")
+            Log.d(TAG, "Loaded ${vectorCache.size} vectors into memory cache (${vectorCache.count { it.sourceType == "farmer_profile" }} farmer profiles, ${vectorCache.count { it.sourceType != "farmer_profile" }} general knowledge)")
         }
     }
 
@@ -138,13 +143,14 @@ class VectorDatabasePersistent(context: Context) {
                     VectorCacheEntry(
                         id = id,
                         farmerId = farmerId,
+                        sourceType = sourceType,
                         embedding = embedding,
                         metadata = JSONObject(metadataJson)
                     )
                 )
             }
 
-            Log.d(TAG, "Inserted vector: $id")
+            Log.d(TAG, "Inserted vector: $id (type: $sourceType, farmerId: ${farmerId ?: "none"})")
             true
         } catch (e: Exception) {
             Log.e(TAG, "Error inserting vector: $id", e)
@@ -185,12 +191,21 @@ class VectorDatabasePersistent(context: Context) {
     /**
      * Search for similar vectors using cosine similarity
      * Returns raw entries sorted by similarity score
+     *
+     * @param queryEmbedding The query vector to compare against
+     * @param topK Maximum number of results to return
+     * @param minScore Minimum similarity score threshold (0.0 to 1.0)
+     * @param farmerIdFilter Optional filter to get only vectors for specific farmer (pass null for all)
+     * @param sourceTypeFilter Optional filter by source type ("farmer_profile", "general", etc.)
+     * @param excludeSourceType Optional type to exclude (e.g., exclude "farmer_profile" to get only general knowledge)
      */
     suspend fun searchSimilar(
         queryEmbedding: FloatArray,
         topK: Int = 5,
         minScore: Float = 0.3f,
-        farmerIdFilter: String? = null
+        farmerIdFilter: String? = null,
+        sourceTypeFilter: String? = null,
+        excludeSourceType: String? = null
     ): List<SimilaritySearchResult> = withContext(Dispatchers.IO) {
         cacheMutex.withLock {
             val results = mutableListOf<SimilaritySearchResult>()
@@ -198,6 +213,17 @@ class VectorDatabasePersistent(context: Context) {
             for (entry in vectorCache) {
                 // Apply farmer ID filter if specified
                 if (farmerIdFilter != null && entry.farmerId != farmerIdFilter) {
+                    continue
+                }
+
+                // Apply source type filter if specified
+                val entryType = entry.metadata.optString("type", "general")
+                if (sourceTypeFilter != null && entryType != sourceTypeFilter) {
+                    continue
+                }
+
+                // Exclude specific source type if specified
+                if (excludeSourceType != null && entryType == excludeSourceType) {
                     continue
                 }
 
@@ -218,7 +244,11 @@ class VectorDatabasePersistent(context: Context) {
             }
 
             // Sort by score descending and take top K
-            results.sortedByDescending { it.score }.take(topK)
+            val topResults = results.sortedByDescending { it.score }.take(topK)
+
+            Log.d(TAG, "Search completed: found ${results.size} vectors above threshold, returning top $topK")
+
+            topResults
         }
     }
 

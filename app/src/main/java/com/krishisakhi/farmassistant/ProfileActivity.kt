@@ -69,16 +69,29 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         btnLogout.setOnClickListener {
-            // Sign out and clear registration flag
+            // Sync profile to Firestore before logout
             val auth = FirebaseAuth.getInstance()
-            auth.signOut()
-            val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
-            prefs.edit().putBoolean("is_registered", false).apply()
+            val uid = auth.currentUser?.uid
 
-            val intent = Intent(this, PhoneAuthActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
+            lifecycleScope.launch {
+                if (uid != null) {
+                    // Sync profile on logout to ensure Firestore is up-to-date
+                    val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(applicationContext)
+                    syncManager.syncOnLogout(uid)
+                }
+
+                // Sign out
+                auth.signOut()
+
+                // Clear registration flag
+                val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
+                prefs.edit().putBoolean("is_registered", false).apply()
+
+                val intent = Intent(this@ProfileActivity, PhoneAuthActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 
@@ -90,26 +103,25 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun loadAndDisplayProfile() {
         val auth = FirebaseAuth.getInstance()
-        val phoneRaw = auth.currentUser?.phoneNumber
+        val uid = auth.currentUser?.uid
 
         lifecycleScope.launch {
             try {
                 val db = AppDatabase.getDatabase(applicationContext)
-                val normalizedPhone = normalizePhoneToDigits(phoneRaw)
                 val profile = withContext(Dispatchers.IO) {
-                    if (normalizedPhone == null) null else db.farmerProfileDao().getProfileByPhone(normalizedPhone)
+                    if (uid == null) null else db.farmerProfileDao().getProfileByUid(uid)
                 }
 
                 if (profile != null) {
-                    tvName.text = profile.name ?: "-"
+                    tvName.text = profile.name.ifEmpty { "-" }
                     tvLocation.text = listOfNotNull(profile.state, profile.district, profile.village).filter { it.isNotBlank() }.joinToString(", ")
                     tvLandSize.text = "Land: ${profile.totalLandSize}"
-                    tvSoilType.text = "Soil: ${profile.soilType ?: "-"}"
-                    tvPrimaryCrops.text = "Crops: ${profile.primaryCrops?.joinToString(", ") ?: "-"}"
-                    tvLanguage.text = "Language: ${profile.languagePreference ?: "-"}"
+                    tvSoilType.text = "Soil: ${profile.soilType.ifEmpty { "-" }}"
+                    tvPrimaryCrops.text = "Crops: ${profile.primaryCrops.joinToString(", ").ifEmpty { "-" }}"
+                    tvLanguage.text = "Language: ${profile.languagePreference.ifEmpty { "-" }}"
                 } else {
                     // show fallback
-                    tvName.text = phoneRaw ?: "Guest"
+                    tvName.text = "Guest"
                     tvLocation.text = "-"
                     tvLandSize.text = "-"
                     tvSoilType.text = "-"
@@ -120,14 +132,5 @@ class ProfileActivity : AppCompatActivity() {
                 Log.e("ProfileActivity", "Failed to load profile", e)
             }
         }
-    }
-
-    // Normalize phone to digits-only string. If 10 digits are provided it prefixes '91'. Returns null if not enough digits.
-    private fun normalizePhoneToDigits(phone: String?): String? {
-        if (phone == null) return null
-        val digits = phone.filter { it.isDigit() }
-        if (digits.length == 10) return "91$digits"
-        if (digits.length >= 11) return digits // assume already includes country code
-        return null
     }
 }

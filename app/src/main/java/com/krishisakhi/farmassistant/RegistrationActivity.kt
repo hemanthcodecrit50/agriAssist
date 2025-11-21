@@ -91,15 +91,25 @@ class RegistrationActivity : AppCompatActivity() {
         btnSubmit.isEnabled = false
 
         val currentUser = auth.currentUser
+        val uid = currentUser?.uid
         val phoneNumber = currentUser?.phoneNumber
+
+        Log.d("RegistrationActivity", "User UID: $uid")
         Log.d("RegistrationActivity", "Raw phone from auth: $phoneNumber")
+
+        if (uid.isNullOrEmpty()) {
+            Toast.makeText(this, "Error: Could not get user UID from authenticated user.", Toast.LENGTH_LONG).show()
+            btnSubmit.isEnabled = true
+            return
+        }
+
         if (phoneNumber.isNullOrEmpty()) {
             Toast.makeText(this, "Error: Could not get phone number from authenticated user.", Toast.LENGTH_LONG).show()
             btnSubmit.isEnabled = true
             return
         }
 
-        // Normalize phone to digits-only form used as DB key
+        // Normalize phone to digits-only form
         val normalized = normalizePhoneToDigits(phoneNumber)
         Log.d("RegistrationActivity", "Normalized phone: $normalized")
         if (normalized == null) {
@@ -108,7 +118,9 @@ class RegistrationActivity : AppCompatActivity() {
             return
         }
 
+        val currentTime = System.currentTimeMillis()
         val profile = FarmerProfile(
+            uid = uid,
             phoneNumber = normalized,
             name = etName.text.toString().trim(),
             state = etState.text.toString().trim(),
@@ -117,16 +129,24 @@ class RegistrationActivity : AppCompatActivity() {
             totalLandSize = etLandSize.text.toString().trim().toDouble(),
             soilType = etSoilType.text.toString().trim(),
             primaryCrops = listOf(etCrop1.text.toString().trim(), etCrop2.text.toString().trim()),
-            languagePreference = spinnerLanguage.selectedItem.toString()
+            languagePreference = spinnerLanguage.selectedItem.toString(),
+            lastUpdated = currentTime,
+            createdAt = currentTime
         )
 
         lifecycleScope.launch {
             try {
-                // 1. Save raw profile to Room database
-                withContext(Dispatchers.IO) {
-                    db.farmerProfileDao().insertProfile(profile)
+                // Use SyncManager to save profile to both Room and Firestore
+                val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(this@RegistrationActivity)
+                val success = syncManager.syncOnRegistration(profile)
+
+                if (!success) {
+                    btnSubmit.isEnabled = true
+                    Toast.makeText(this@RegistrationActivity, "Failed to save profile", Toast.LENGTH_LONG).show()
+                    return@launch
                 }
-                Log.d("RegistrationActivity", "Profile saved to Room database")
+
+                Log.d("RegistrationActivity", "Profile saved to Room and Firestore successfully")
 
                 // 2. Convert profile to natural language text using FarmerProfileSerializer
                 val profileText = FarmerProfileSerializer.toEmbeddingSummary(profile)
@@ -143,10 +163,11 @@ class RegistrationActivity : AppCompatActivity() {
 
                     // 4. Store vector in persistent Vector DB
                     val vectorDb = VectorDatabasePersistent(this@RegistrationActivity)
-                    val vectorId = "farmer_profile_${normalized}"
+                    val vectorId = "farmer_profile_${uid}"
 
                     val metadata = mapOf(
                         "type" to "farmer_profile",
+                        "uid" to uid,
                         "phoneNumber" to normalized,
                         "name" to profile.name,
                         "state" to profile.state,
@@ -164,7 +185,7 @@ class RegistrationActivity : AppCompatActivity() {
                             id = vectorId,
                             embedding = embedding,
                             metadata = metadata,
-                            farmerId = normalized
+                            farmerId = uid
                         )
                     }
 

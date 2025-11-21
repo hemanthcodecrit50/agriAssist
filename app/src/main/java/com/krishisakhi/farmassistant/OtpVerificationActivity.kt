@@ -7,9 +7,11 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.launch
 
 class OtpVerificationActivity : AppCompatActivity() {
 
@@ -64,18 +66,16 @@ class OtpVerificationActivity : AppCompatActivity() {
                     // Sign in success
                     Toast.makeText(this, "Authentication successful!", Toast.LENGTH_SHORT).show()
 
-                    // After successful auth decide where to go: profile registration or main
-                    val prefs = getSharedPreferences("farm_prefs", MODE_PRIVATE)
-                    val isRegistered = prefs.getBoolean("is_registered", false)
+                    // After successful Firebase Auth, check Firestore for user profile
+                    val currentUser = auth.currentUser
+                    val uid = currentUser?.uid
 
-                    val nextIntent = if (isRegistered) {
-                        Intent(this, MainActivity::class.java)
+                    if (uid != null) {
+                        checkFirestoreProfileAndNavigate(uid)
                     } else {
-                        Intent(this, RegistrationActivity::class.java)
+                        Toast.makeText(this, "Error: Could not get user UID", Toast.LENGTH_LONG).show()
+                        verifyOtpButton.isEnabled = true
                     }
-                    nextIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(nextIntent)
-                    finish()
                 } else {
                     // Sign in failed
                     Toast.makeText(
@@ -86,5 +86,42 @@ class OtpVerificationActivity : AppCompatActivity() {
                     verifyOtpButton.isEnabled = true
                 }
             }
+    }
+
+    private fun checkFirestoreProfileAndNavigate(uid: String) {
+        // Use SyncManager to check if profile exists in Firestore
+        lifecycleScope.launch {
+            try {
+                val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(this@OtpVerificationActivity)
+
+                // Check if profile exists in Firestore
+                val profileExists = syncManager.profileExistsInFirestore(uid)
+
+                if (profileExists) {
+                    // Profile exists in Firestore - sync to Room and go to MainActivity
+                    val profile = syncManager.syncOnLogin(uid)
+                    if (profile != null) {
+                        Toast.makeText(this@OtpVerificationActivity, "Welcome back, ${profile.name}!", Toast.LENGTH_SHORT).show()
+                    }
+                    val intent = Intent(this@OtpVerificationActivity, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    // Profile doesn't exist - go to RegistrationActivity
+                    val intent = Intent(this@OtpVerificationActivity, RegistrationActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(
+                    this@OtpVerificationActivity,
+                    "Error checking profile: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                verifyOtpButton.isEnabled = true
+            }
+        }
     }
 }

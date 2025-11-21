@@ -102,25 +102,18 @@ class MainActivity : AppCompatActivity() {
         val tvUserName = findViewById<TextView?>(R.id.tvUserName)
         tvUserName?.text = getString(R.string.welcome_message)
 
-        var phone = auth.currentUser?.phoneNumber
-        Log.d(TAG, "Raw phone from auth in MainActivity: $phone")
-        if (phone.isNullOrEmpty()) {
-            Log.w(TAG, "No authenticated phone number available for current user")
-            return
-        }
+        val uid = auth.currentUser?.uid
+        Log.d(TAG, "User UID in MainActivity: $uid")
 
-        // Normalize phone same as RegistrationActivity
-        val normalized = normalizePhoneToDigits(phone)
-        if (normalized == null) {
-            Log.w(TAG, "Could not normalize phone: $phone")
+        if (uid.isNullOrEmpty()) {
+            Log.w(TAG, "No authenticated UID available for current user")
             return
         }
-        Log.d(TAG, "Normalized phone in MainActivity: $normalized")
 
         lifecycleScope.launch {
             val profile = withContext(Dispatchers.IO) {
                 try {
-                    db.farmerProfileDao().getProfileByPhone(normalized)
+                    db.farmerProfileDao().getProfileByUid(uid)
                 } catch (e: Exception) {
                     Log.e(TAG, "DB query failed: ${e.message}")
                     null
@@ -128,11 +121,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (profile != null) {
-                Log.d(TAG, "Found profile for $normalized: ${profile.name}")
+                Log.d(TAG, "Found profile for uid $uid: ${profile.name}")
                 tvUserName?.text = profile.name
             } else {
-                Log.d(TAG, "No profile found for phone $normalized")
-                tvUserName?.text = if (normalized.length >= 4) normalized.takeLast(4) else normalized
+                Log.d(TAG, "No profile found for uid $uid")
+                // Try to sync from Firestore if local profile not found
+                val syncManager = com.krishisakhi.farmassistant.sync.SyncManager.getInstance(this@MainActivity)
+                val syncedProfile = syncManager.syncOnLogin(uid)
+                if (syncedProfile != null) {
+                    Log.d(TAG, "Profile synced from Firestore: ${syncedProfile.name}")
+                    tvUserName?.text = syncedProfile.name
+                } else {
+                    tvUserName?.text = "Guest User"
+                }
             }
         }
     }
