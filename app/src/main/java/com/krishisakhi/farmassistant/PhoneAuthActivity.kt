@@ -1,5 +1,6 @@
 package com.krishisakhi.farmassistant
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -101,6 +102,7 @@ class PhoneAuthActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -125,8 +127,7 @@ class PhoneAuthActivity : AppCompatActivity() {
                 val btnProfile = if (btnProfileId != 0) findViewById<Button>(btnProfileId) else null
 
                 val phoneRaw = auth.currentUser?.phoneNumber ?: "Unknown"
-                val name = auth.currentUser?.displayName ?: "Unknown"
-                tvSignedInAs?.text = "Signed in as $name"
+                tvSignedInAs?.text = "Signed in as ${phoneRaw.subSequence(3, phoneRaw.length)}"
 
                 btnRegister?.setOnClickListener {
                     val intent = Intent(this, RegistrationActivity::class.java)

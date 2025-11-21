@@ -101,7 +101,7 @@
             android:text="Use Current Location"
             android:textColor="#1A1A1A"
             android:textStyle="bold"
-            android:backgroundTint="#00D66C"
+            android:backgroundTint="@color/primary_green"
             app:cornerRadius="12dp"
             android:drawableStart="@drawable/ic_weather"
             android:drawablePadding="8dp"
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
-            android:indeterminateTint="#00D66C" />
+            android:indeterminateTint="@color/primary_green" />
 
         <!-- Weather Data Container -->
         <LinearLayout
@@ -128,7 +128,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#1A1A1A"
+                app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
                 android:layout_marginBottom="16dp">
@@ -155,7 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="25°C"
-                        android:textColor="#00D66C"
+                        android:textColor="@color/primary_green"
                         android:textSize="64sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp" />
@@ -195,7 +195,7 @@
                     android:layout_column="0"
                     android:layout_columnWeight="1"
                     android:layout_margin="8dp"
-                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
 
@@ -269,7 +269,7 @@
                     android:layout_column="0"
                     android:layout_columnWeight="1"
                     android:layout_margin="8dp"
-                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
 
@@ -306,7 +306,7 @@
                     android:layout_column="1"
                     android:layout_columnWeight="1"
                     android:layout_margin="8dp"
-                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp">
 

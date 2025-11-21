@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
-            android:indeterminateTint="#00D66C"
+            android:indeterminateTint="#5D866C"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="48dp" />
 

@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Next 3 days"
-                android:textColor="#9CA3AF"
+                android:textColor="#F5F5F0"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp" />
 
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2h ago"
-                android:textColor="#6B7280"
+                android:textColor="#F5F5F0"
                 android:textSize="12sp"
                 android:layout_marginTop="4dp" />
         </LinearLayout>

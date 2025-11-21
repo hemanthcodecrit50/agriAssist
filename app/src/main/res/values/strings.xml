@@ -34,4 +34,56 @@
     <string name="notifications">Notifications</string>
     <string name="see_all">See All</string>
     <string name="view_details">View Details</string>
+
+    <!-- New strings added to remove hardcoded literals -->
+    <string name="signed_in">Signed in</string>
+    <string name="continue_to_app">Continue to App</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="view_profile">View Profile</string>
+
+    <string name="ai_response">AI Response</string>
+    <string name="your_question">Your Question</string>
+    <string name="loading_response">Loading response...</string>
+    <string name="ai_tip">💡 Tip: You can scroll to read the complete response</string>
+    <string name="back">Back</string>
+    <string name="ai_assistant_response">AI Assistant Response</string>
+
+    <string name="weather_information">Weather Information</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="enter_city_hint">Enter city name</string>
+    <string name="search">Search</string>
+    <string name="use_current_location">Use Current Location</string>
+    <string name="city_bengaluru">Bengaluru</string>
+    <string name="partly_cloudy">Partly Cloudy</string>
+    <string name="feels_like">Feels like 27°C</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="pressure">Pressure</string>
+    <string name="visibility">Visibility</string>
+    <string name="unable_fetch_weather">Unable to fetch weather data. Please try again.</string>
+
+    <string name="item_icon_desc">Item icon</string>
+    <string name="item_title">Item Title</string>
+    <string name="item_subtitle">Item subtitle or description</string>
+    <string name="badge_tag">Badge/Tag</string>
+    <string name="two_hours_ago">2h ago</string>
+    <string name="view_details_desc">View details</string>
+    <string name="price_sample">₹2100</string>
+
+    <!-- Strings used by GovtSchemeAdapter -->
+    <string name="scheme_subtitle_format">%1$s\n%2$s</string>
+    <string name="deadline_format">Deadline: %1$s</string>
+    <string name="scheme_detail_format">Benefits: %1$s\n\nEligibility:\n%2$s</string>
+
+    <!-- Strings used by MarketPriceAdapter -->
+    <string name="market_subtitle_format">%1$s • %2$s</string>
+    <string name="price_unit_format">₹%1$d/%2$s</string>
+    <string name="zero_change_text">─ 0.0%</string>
+    <string name="price_detail_format">Previous: ₹%1$d\nCurrent: ₹%2$d\nChange: ₹%3$d</string>
+
+    <!-- Strings used by PestAlertAdapter -->
+    <string name="pest_subtitle_format">%1$s • %2$s</string>
+    <string name="pest_detail_format">Symptoms: %1$s\n\nTreatment: %2$s</string>
+
+    <string name="robot_emoji">🤖</string>
 </resources>

@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.krishisakhi.farmassistant.adapter.MarketPriceAdapter
 import com.krishisakhi.farmassistant.data.MarketPrice
+import com.krishisakhi.farmassistant.network.NetworkModule
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MarketPricesActivity : AppCompatActivity() {
@@ -69,105 +74,27 @@ class MarketPricesActivity : AppCompatActivity() {
 
     private fun loadData() {
         showLoading()
-        loadSampleData()
-        showData()
+
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            throwable.printStackTrace()
+            runOnUiThread {
+                showData()
+            }
+        }
+
+        CoroutineScope(Dispatchers.Main + handler).launch {
+            try {
+                val response = NetworkModule.fetchMarketPrices()
+                dataList.clear()
+                dataList.addAll(response)
+                showData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                showData()
+            }
+        }
     }
 
-    private fun loadSampleData() {
-        dataList.clear()
-        dataList.addAll(listOf(
-            MarketPrice(
-                commodityName = "Wheat (गेहूं)",
-                currentPrice = 2100.0F,
-                previousPrice = 2050.0F,
-                unit = "quintal",
-                marketName = "APMC Bangalore",
-                category = "Grains",
-                lastUpdated = "2 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Rice (चावल)",
-                currentPrice = 3500.0F,
-                previousPrice = 3600.0F,
-                unit = "quintal",
-                marketName = "APMC Bangalore",
-                category = "Grains",
-                lastUpdated = "2 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Tomato (टमाटर)",
-                currentPrice = 25.0F,
-                previousPrice = 22.0F,
-                unit = "kg",
-                marketName = "Yeshwanthpur Market",
-                category = "Vegetables",
-                lastUpdated = "1 hour ago"
-            ),
-            MarketPrice(
-                commodityName = "Onion (प्याज)",
-                currentPrice = 40.0F,
-                previousPrice = 45.0F,
-                unit = "kg",
-                marketName = "KR Market Bangalore",
-                category = "Vegetables",
-                lastUpdated = "4 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Potato (आलू)",
-                currentPrice = 18.0F,
-                previousPrice = 20.0F,
-                unit = "kg",
-                marketName = "Azadpur Mandi Delhi",
-                category = "Vegetables",
-                lastUpdated = "3 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Cotton (कपास)",
-                currentPrice = 5800.0F,
-                previousPrice = 5750.0F,
-                unit = "quintal",
-                marketName = "APMC Hubli",
-                category = "Cash Crops",
-                lastUpdated = "5 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Soybean (सोयाबीन)",
-                currentPrice = 4200.0F,
-                previousPrice = 4300.0F,
-                unit = "quintal",
-                marketName = "APMC Indore",
-                category = "Pulses",
-                lastUpdated = "6 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Sugarcane (गन्ना)",
-                currentPrice = 310.0F,
-                previousPrice = 305.0F,
-                unit = "quintal",
-                marketName = "UP Sugar Mills",
-                category = "Cash Crops",
-                lastUpdated = "1 day ago"
-            ),
-            MarketPrice(
-                commodityName = "Turmeric (हल्दी)",
-                currentPrice = 7500.0F,
-                previousPrice = 7200.0F,
-                unit = "quintal",
-                marketName = "APMC Nizamabad",
-                category = "Spices",
-                lastUpdated = "4 hours ago"
-            ),
-            MarketPrice(
-                commodityName = "Banana (केला)",
-                currentPrice = 35.0F,
-                previousPrice = 32.0F,
-                unit = "dozen",
-                marketName = "Yeshwanthpur Market",
-                category = "Fruits",
-                lastUpdated = "2 hours ago"
-            )
-        ))
-    }
 
     private fun showLoading() {
         loadingIndicator.visibility = View.VISIBLE

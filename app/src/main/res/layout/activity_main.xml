@@ -59,6 +59,7 @@
                 android:id="@+id/profileButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:backgroundTint="@color/primary_green"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/profile"
                 android:src="@drawable/ic_profile" />
@@ -70,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="24dp"
-            android:backgroundTint="#00D66C"
+            android:backgroundTint="@color/primary_green"
             android:drawableStart="@drawable/ic_microphone"
             android:drawablePadding="8dp"
             android:paddingStart="16dp"
@@ -267,7 +268,7 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="120dp"
-                    android:background="#00D66C"
+                    android:background="@color/primary_green"
                     android:contentDescription="@string/rain_advisory"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_rain" />
@@ -318,7 +319,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/see_all"
-                android:textColor="#00D66C"
+                android:textColor="@color/primary_green"
                 android:textSize="14sp" />
         </LinearLayout>
 

@@ -17,7 +17,7 @@
             android:id="@+id/profileAvatar"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:src="@drawable/ic_govt"
+            android:src="@drawable/ic_profile"
             android:contentDescription="Profile avatar"
             android:layout_marginBottom="12dp"/>
 

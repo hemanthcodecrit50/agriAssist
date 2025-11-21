@@ -2,22 +2,93 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#009688"
+    android:backgroundTint="@color/black"
     android:padding="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:orientation="vertical">
 
-        <EditText android:id="@+id/etName" android:hint="Name" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etState" android:hint="State" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etDistrict" android:hint="District" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etVillage" android:hint="Village" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etLandSize" android:inputType="numberDecimal" android:hint="Total Land Size (acres/hectares)" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etSoilType" android:hint="Soil Type" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etCrop1" android:hint="Primary Crop 1" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <EditText android:id="@+id/etCrop2" android:hint="Primary Crop 2" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <Spinner android:id="@+id/spinnerLanguage" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <Button android:id="@+id/btnSubmit" android:text="Save Profile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp"/>
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="Name" />
+
+        <EditText
+            android:id="@+id/etState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:hint="State" />
+
+        <EditText
+            android:id="@+id/etDistrict"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="District" />
+
+        <EditText
+            android:id="@+id/etVillage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="Village" />
+
+        <EditText
+            android:id="@+id/etLandSize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Total Land Size (acres/hectares)"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/etSoilType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="Soil Type" />
+
+        <EditText
+            android:id="@+id/etCrop1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="Primary Crop 1" />
+
+        <EditText
+            android:id="@+id/etCrop2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:hint="Primary Crop 2" />
+
+        <Spinner
+            android:id="@+id/spinnerLanguage"
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@color/primary_green"
+            android:text="Save Profile"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 </ScrollView>
