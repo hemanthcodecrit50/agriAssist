@@ -4,21 +4,25 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.krishisakhi.farmassistant.adapter.MarketPriceAdapter
 import com.krishisakhi.farmassistant.data.MarketPrice
+import com.krishisakhi.farmassistant.db.AppDatabase
 import com.krishisakhi.farmassistant.network.NetworkModule
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MarketPricesActivity : AppCompatActivity() {
@@ -64,6 +68,14 @@ class MarketPricesActivity : AppCompatActivity() {
         headerTitle.text = "Market Prices"
         emptyStateText.text = "No market prices available"
 
+        // When user submits a search, query using that commodity and the saved state (if any)
+        searchInput.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                val query = v.text?.toString()?.trim()
+                loadData(query)
+                true
+            } else false
+        }
     }
 
     private fun setupRecyclerView() {
@@ -72,25 +84,70 @@ class MarketPricesActivity : AppCompatActivity() {
                 recyclerView.adapter = adapter
     }
 
-    private fun loadData() {
+    /**
+     * Load market prices.
+     * If commodity is null/blank, we will try to read the saved FarmerProfile from Room
+     * and use the first primary crop and the saved state as defaults.
+     */
+    private fun loadData(commodity: String? = null, state: String? = null) {
         showLoading()
 
         val handler = CoroutineExceptionHandler { _, throwable ->
             throwable.printStackTrace()
             runOnUiThread {
-                showData()
+                showError()
+                Toast.makeText(this, "Failed to load market prices: ${'$'}{throwable.message}", Toast.LENGTH_LONG).show()
             }
         }
 
         CoroutineScope(Dispatchers.Main + handler).launch {
+            var useCommodity: String? = commodity
+            var useState: String? = state
+
+            // If no explicit commodity/state provided, try reading from local DB
+            if (useCommodity.isNullOrBlank() || useState.isNullOrBlank()) {
+                try {
+                    withContext(Dispatchers.IO) {
+                        val db = AppDatabase.getDatabase(applicationContext)
+                        val profiles = db.farmerProfileDao().getAllProfiles()
+                        if (profiles.isNotEmpty()) {
+                            val profile = profiles.first()
+                            if (useCommodity.isNullOrBlank()) {
+                                useCommodity = profile.primaryCrops.firstOrNull()
+                            }
+                            if (useState.isNullOrBlank()) {
+                                useState = profile.state.takeIf { it.isNotBlank() }
+                            }
+                        }
+                    }
+                } catch (dbEx: Exception) {
+                    // DB read failed — continue and attempt network call without profile defaults
+                    dbEx.printStackTrace()
+                }
+            }
+
+            // Update header to show active filters (helps debugging/will show values from DB)
+            val headerSuffix = when {
+                !useCommodity.isNullOrBlank() && !useState.isNullOrBlank() -> " — ${'$'}useCommodity (${useState})"
+                !useCommodity.isNullOrBlank() -> " — ${'$'}useCommodity"
+                !useState.isNullOrBlank() -> " — ${'$'}useState"
+                else -> ""
+            }
+            //headerTitle.text = "Market Prices${headerSuffix}"
+
             try {
-                val response = NetworkModule.fetchMarketPrices()
+                val response = NetworkModule.fetchMarketPrices(useCommodity, useState)
                 dataList.clear()
                 dataList.addAll(response)
                 showData()
+
+                if (response.isEmpty()) {
+                    Toast.makeText(this@MarketPricesActivity, "No market prices returned from server.", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                showData()
+                showError()
+                Toast.makeText(this@MarketPricesActivity, "Could not fetch market prices: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

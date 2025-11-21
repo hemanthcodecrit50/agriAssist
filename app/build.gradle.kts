@@ -30,8 +30,10 @@ android {
         }
         val weatherApiKey = localProperties.getProperty("OPENWEATHER_API_KEY") ?: ""
         val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+        val ngrokUrl = localProperties.getProperty("NGROK_URL") ?: ""
         buildConfigField("String", "OPENWEATHER_API_KEY", "\"$weatherApiKey\"")
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+        buildConfigField("String", "NGROK_URL", "\"$ngrokUrl\"")
     }
 
     buildFeatures {

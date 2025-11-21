@@ -42,6 +42,7 @@ class GeminiAIService(private val apiKey: String) {
                 Answer the following farming question in a clear, concise manner (maximum 150 words).
                 Provide the most important practical advice that farmers can easily understand.
                 Focus on the key points. If the question is not about agriculture, politely redirect.
+                Make sure to reply in English only.
                 
                 Question: $userQuery
                 
