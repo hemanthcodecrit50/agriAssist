@@ -7,6 +7,18 @@
     android:background="#0F0F0F"
     android:gravity="center_vertical">
 
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/ivAppLogo"
+        android:layout_width="96dp"
+        android:layout_height="94dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_krishisakhi_foreground" />
+
     <TextView
         android:id="@+id/tvSignedInAs"
         android:layout_width="match_parent"

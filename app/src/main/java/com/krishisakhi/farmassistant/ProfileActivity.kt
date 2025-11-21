@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
+import com.krishisakhi.farmassistant.data.FarmerProfile
 import com.krishisakhi.farmassistant.db.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,8 +65,34 @@ class ProfileActivity : AppCompatActivity() {
         loadAndDisplayProfile()
 
         btnEditProfile.setOnClickListener {
-            // Open registration form where user can edit (reuse RegistrationActivity)
-            startActivity(Intent(this, RegistrationActivity::class.java))
+            // When user taps Edit Profile, fetch latest profile from DB then open RegistrationActivity with prefilled values
+            lifecycleScope.launch {
+                try {
+                    val auth = FirebaseAuth.getInstance()
+                    val uid = auth.currentUser?.uid
+                    val db = AppDatabase.getDatabase(applicationContext)
+                    val profile = if (uid != null) withContext(Dispatchers.IO) { db.farmerProfileDao().getProfileByUid(uid) } else null
+
+                    val intent = Intent(this@ProfileActivity, RegistrationActivity::class.java)
+                    if (profile != null) {
+                        intent.putExtra("prefill_name", profile.name)
+                        intent.putExtra("prefill_state", profile.state)
+                        intent.putExtra("prefill_district", profile.district)
+                        intent.putExtra("prefill_village", profile.village)
+                        intent.putExtra("prefill_landSize", profile.totalLandSize)
+                        intent.putExtra("prefill_soilType", profile.soilType)
+                        // primaryCrops may have 1..N entries; map to two fields if available
+                        if (!profile.primaryCrops.isNullOrEmpty()) intent.putExtra("prefill_crop1", profile.primaryCrops.getOrNull(0))
+                        if (profile.primaryCrops.size > 1) intent.putExtra("prefill_crop2", profile.primaryCrops.getOrNull(1))
+                        intent.putExtra("prefill_language", profile.languagePreference)
+                        intent.putExtra("prefill_phone", profile.phoneNumber)
+                    }
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Log.e("ProfileActivity", "Failed to open RegistrationActivity with prefill", e)
+                    startActivity(Intent(this@ProfileActivity, RegistrationActivity::class.java))
+                }
+            }
         }
 
         btnLogout.setOnClickListener {
