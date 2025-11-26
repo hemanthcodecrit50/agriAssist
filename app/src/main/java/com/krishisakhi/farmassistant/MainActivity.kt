@@ -150,15 +150,38 @@ class MainActivity : AppCompatActivity() {
         notificationRecyclerView = findViewById(R.id.notificationsRecyclerView)
         notificationRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Sample notifications data
-        val notifications = listOf(
-            NotificationItem("Heavy rainfall expected", "Next 3 days", "2h ago"),
-            NotificationItem("Market price update", "Wheat ₹2100/quintal", "5h ago"),
-            NotificationItem("New pest alert", "Aphids in your region", "1d ago")
-        )
-
-        notificationAdapter = NotificationAdapter(notifications)
+        // Initialize adapter with empty list
+        notificationAdapter = NotificationAdapter(mutableListOf())
         notificationRecyclerView.adapter = notificationAdapter
+
+        // Get empty state view
+        val emptyView = findViewById<android.view.View>(R.id.notificationsEmptyView)
+
+        // Fetch notifications from backend
+        lifecycleScope.launch {
+            try {
+                val notifications = withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    com.krishisakhi.farmassistant.network.NetworkModule.fetchNotifications()
+                }
+
+                if (notifications.isEmpty()) {
+                    // Show empty state
+                    emptyView.visibility = android.view.View.VISIBLE
+                    notificationRecyclerView.visibility = android.view.View.GONE
+                } else {
+                    // Show notifications
+                    emptyView.visibility = android.view.View.GONE
+                    notificationRecyclerView.visibility = android.view.View.VISIBLE
+                    notificationAdapter.setNotifications(notifications)
+                }
+            } catch (e: Exception) {
+                // On error, show empty state and log
+                emptyView.visibility = android.view.View.VISIBLE
+                notificationRecyclerView.visibility = android.view.View.GONE
+                Log.e(TAG, "Error fetching notifications", e)
+                Toast.makeText(this@MainActivity, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupQuickAccessButtons() {

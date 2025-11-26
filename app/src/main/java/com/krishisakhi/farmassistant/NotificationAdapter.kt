@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.krishisakhi.farmassistant.data.NotificationItem
 
-class NotificationAdapter(private val notifications: List<NotificationItem>) :
+class NotificationAdapter(private val notifications: MutableList<NotificationItem> = mutableListOf()) :
     RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     class NotificationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -30,5 +30,11 @@ class NotificationAdapter(private val notifications: List<NotificationItem>) :
     }
 
     override fun getItemCount() = notifications.size
-}
 
+    // Replace current list with a new list and notify adapter
+    fun setNotifications(newList: List<NotificationItem>) {
+        notifications.clear()
+        notifications.addAll(newList)
+        notifyDataSetChanged()
+    }
+}
