@@ -7,5 +7,5 @@ object ApiConfig {
     const val PEST_ALERTS_ENDPOINT = "pestalerts"
     const val MARKET_PRICES_ENDPOINT = "marketprices"
     const val GOVT_SCHEMES_ENDPOINT = "govtschemes"
+    const val NOTIFICATIONS_ENDPOINT = "notifications"
 }
-

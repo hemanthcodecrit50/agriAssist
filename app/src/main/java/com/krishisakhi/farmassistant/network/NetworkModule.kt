@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.krishisakhi.farmassistant.data.GovtScheme
 import com.krishisakhi.farmassistant.data.MarketPrice
 import com.krishisakhi.farmassistant.data.PestAlert
+import com.krishisakhi.farmassistant.data.NotificationItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -62,6 +63,17 @@ object NetworkModule {
             val body = resp.body?.string() ?: throw Exception("Empty response body")
             val listType = object : TypeToken<List<GovtScheme>>() {}.type
             return@withContext gson.fromJson<List<GovtScheme>>(body, listType)
+        }
+    }
+
+    suspend fun fetchNotifications(): List<NotificationItem> = withContext(Dispatchers.IO) {
+        val url = ApiConfig.BASE_URL.trimEnd('/') + "/" + ApiConfig.NOTIFICATIONS_ENDPOINT.trimStart('/')
+        val request = Request.Builder().url(url).get().build()
+        okHttpClient.newCall(request).execute().use { resp ->
+            if (!resp.isSuccessful) throw Exception("HTTP ${'$'}{resp.code} - ${'$'}{resp.message}")
+            val body = resp.body?.string() ?: return@withContext emptyList<NotificationItem>()
+            val listType = object : TypeToken<List<NotificationItem>>() {}.type
+            return@withContext gson.fromJson<List<NotificationItem>>(body, listType)
         }
     }
 }

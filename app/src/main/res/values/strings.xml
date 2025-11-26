@@ -34,6 +34,7 @@
     <string name="notifications">Notifications</string>
     <string name="see_all">See All</string>
     <string name="view_details">View Details</string>
+    <string name="no_notifications_icon">No notifications</string>
 
     <!-- New strings added to remove hardcoded literals -->
     <string name="signed_in">Signed in</string>
