@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_profile.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -70,18 +71,55 @@
             android:text="Language Preference"
             android:layout_marginTop="8dp"/>
 
-        <Button
-            android:id="@+id/btnEditProfile"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="#00D66C"
-            android:text="Edit Profile"
-            android:drawablePadding="8dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textColor="#1A1A1A"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:spacing="12dp">
+
+            <Button
+                android:id="@+id/btnEditProfile"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/primary_green"
+                android:text="Edit Profile"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:textColor="#1A1A1A"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:elevation="4dp"
+                app:cornerRadius="12dp"
+                android:stateListAnimator="@null"/>
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:text="Logout"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:textColor="#1A1A1A"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@color/primary_green"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

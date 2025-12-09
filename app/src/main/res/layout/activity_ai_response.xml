@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <!-- Header with Back Button -->
+        <!-- Header with Back Button and Stop Audio -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
                 android:id="@+id/backButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_app_logo"
+                android:src="@drawable/ic_mic"
                 android:background="@android:color/transparent"
                 app:tint="@color/primary_green"
                 android:scaleType="centerInside"
@@ -39,6 +39,17 @@
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/stopAudioButton"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_stop"
+                android:background="@android:color/transparent"
+                app:tint="@color/primary_red"
+                android:scaleType="centerInside"
+                android:contentDescription="Stop audio"
+                android:visibility="gone" />
         </LinearLayout>
 
         <!-- User Question Card -->
@@ -130,7 +141,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="💡 Tip: You can scroll to read the complete response"
+            android:text="Tip: You can scroll to read the complete response"
             android:textColor="#6B7280"
             android:textSize="12sp"
             android:gravity="center"

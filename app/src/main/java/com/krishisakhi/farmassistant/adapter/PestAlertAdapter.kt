@@ -1,6 +1,7 @@
 package com.krishisakhi.farmassistant.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,8 @@ class PestAlertAdapter(private val items: MutableList<PestAlert>) : RecyclerView
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
+        // added chevron reference
+        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -63,13 +66,17 @@ class PestAlertAdapter(private val items: MutableList<PestAlert>) : RecyclerView
         holder.itemIcon.visibility = View.GONE
         holder.itemValue.visibility = View.GONE
 
-        // Click listener for detail view
-        holder.itemView.setOnClickListener {
-            android.widget.Toast.makeText(
-                holder.itemView.context,
-                ctx.getString(R.string.pest_detail_format, pestAlert.symptoms, pestAlert.treatment),
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+        // Click listener for chevron (show details in a dialog with ivory background)
+        holder.chevronIcon.setOnClickListener {
+            val message = ctx.getString(R.string.pest_detail_format, pestAlert.symptoms, pestAlert.treatment)
+            val builder = androidx.appcompat.app.AlertDialog.Builder(ctx)
+                .setTitle(pestAlert.pestName)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+
+            val dialog = builder.create()
+            dialog.show()
+            dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg_ivory)
         }
     }
 

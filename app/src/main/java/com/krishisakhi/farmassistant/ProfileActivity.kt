@@ -52,14 +52,7 @@ class ProfileActivity : AppCompatActivity() {
         tvPrimaryCrops = findViewById(R.id.tvPrimaryCrops)
         tvLanguage = findViewById(R.id.tvLanguage)
         val btnEditProfile = findViewById<Button>(R.id.btnEditProfile)
-
-        val btnLogout = Button(this).apply {
-            text = "Logout"
-            layoutParams = btnEditProfile.layoutParams
-        }
-
-        // add logout button below edit profile
-        (btnEditProfile.parent as? android.view.ViewGroup)?.addView(btnLogout)
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
 
         // Load profile on create
         loadAndDisplayProfile()
