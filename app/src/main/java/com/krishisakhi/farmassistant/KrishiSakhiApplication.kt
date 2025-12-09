@@ -16,6 +16,7 @@ class KrishiSakhiApplication : Application() {
 
     companion object {
         private const val TAG = "KrishiSakhiApplication"
+        var textToSpeechPlayer: TextToSpeechPlayer? = null
     }
 
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

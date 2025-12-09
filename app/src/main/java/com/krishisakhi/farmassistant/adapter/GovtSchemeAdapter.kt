@@ -1,6 +1,7 @@
 package com.krishisakhi.farmassistant.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
+        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -68,14 +70,18 @@ class GovtSchemeAdapter(private val items: List<GovtScheme>) : RecyclerView.Adap
         // Hide value
         holder.itemValue.visibility = View.GONE
 
-        // Click listener
-        holder.itemView.setOnClickListener {
+        // Click listener on chevron -> show details dialog with ivory background
+        holder.chevronIcon.setOnClickListener {
             val eligibilityText = scheme.eligibility.joinToString("\n• ", "• ")
-            android.widget.Toast.makeText(
-                holder.itemView.context,
-                ctx.getString(R.string.scheme_detail_format, scheme.benefits, eligibilityText),
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+            val message = ctx.getString(R.string.scheme_detail_format, scheme.benefits, eligibilityText)
+            val builder = androidx.appcompat.app.AlertDialog.Builder(ctx)
+                .setTitle(scheme.schemeName)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+
+            val dialog = builder.create()
+            dialog.show()
+            dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg_ivory)
         }
     }
 

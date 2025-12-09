@@ -13,6 +13,8 @@ class AIResponseActivity : AppCompatActivity() {
         const val EXTRA_AI_RESPONSE = "ai_response"
     }
 
+    private var stopAudioButton: ImageButton? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ai_response)
@@ -23,6 +25,7 @@ class AIResponseActivity : AppCompatActivity() {
 
         // Initialize views
         val backButton = findViewById<ImageButton>(R.id.backButton)
+        stopAudioButton = findViewById<ImageButton>(R.id.stopAudioButton)
         val userQuestionText = findViewById<TextView>(R.id.userQuestionText)
         val aiResponseText = findViewById<TextView>(R.id.aiResponseText)
 
@@ -38,12 +41,35 @@ class AIResponseActivity : AppCompatActivity() {
             finish()
         }
 
+        // Stop audio button listener
+        stopAudioButton?.setOnClickListener {
+            stopAudio()
+        }
+
+        // Show stop button if audio is playing
+        updateStopButtonVisibility()
+
         // Handle system back button
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
             }
         })
+    }
+
+    private fun stopAudio() {
+        KrishiSakhiApplication.textToSpeechPlayer?.stop()
+        stopAudioButton?.visibility = android.view.View.GONE
+    }
+
+    private fun updateStopButtonVisibility() {
+        val isSpeaking = KrishiSakhiApplication.textToSpeechPlayer?.isSpeaking() ?: false
+        stopAudioButton?.visibility = if (isSpeaking) android.view.View.VISIBLE else android.view.View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateStopButtonVisibility()
     }
 }
 

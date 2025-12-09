@@ -1,6 +1,7 @@
 package com.krishisakhi.farmassistant.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : Recycler
         val itemBadge: TextView = view.findViewById(R.id.itemBadge)
         val itemTimestamp: TextView = view.findViewById(R.id.itemTimestamp)
         val itemValue: TextView = view.findViewById(R.id.itemValue)
+        val chevronIcon: ImageView = view.findViewById(R.id.chevronIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -62,13 +64,17 @@ class MarketPriceAdapter(private val items: MutableList<MarketPrice>) : Recycler
         holder.statusIndicator.visibility = View.GONE
         holder.itemIcon.visibility = View.GONE
 
-        // Click listener
-        holder.itemView.setOnClickListener {
-            android.widget.Toast.makeText(
-                holder.itemView.context,
-                ctx.getString(R.string.price_detail_format, marketPrice.previousPrice.toInt(), marketPrice.currentPrice.toInt(), changePercentage.toInt()),
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+        // Click listener on chevron -> show dialog with details
+        holder.chevronIcon.setOnClickListener {
+            val message = ctx.getString(R.string.price_detail_format, marketPrice.previousPrice.toInt(), marketPrice.currentPrice.toInt())
+            val builder = androidx.appcompat.app.AlertDialog.Builder(ctx)
+                .setTitle(marketPrice.commodityName)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+
+            val dialog = builder.create()
+            dialog.show()
+            dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg_ivory)
         }
     }
     override fun getItemCount() = items.size

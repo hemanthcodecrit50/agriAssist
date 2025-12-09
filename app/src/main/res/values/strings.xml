@@ -80,7 +80,7 @@
     <string name="market_subtitle_format">%1$s • %2$s</string>
     <string name="price_unit_format">₹%1$d/%2$s</string>
     <string name="zero_change_text">─ 0.0%</string>
-    <string name="price_detail_format">Previous: ₹%1$d\nCurrent: ₹%2$d\nChange: ₹%3$d</string>
+    <string name="price_detail_format">Previous: ₹%1$d\nCurrent: ₹%2$d</string>
 
     <!-- Strings used by PestAlertAdapter -->
     <string name="pest_subtitle_format">%1$s • %2$s</string>

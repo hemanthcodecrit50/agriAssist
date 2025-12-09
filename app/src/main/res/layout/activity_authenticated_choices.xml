@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/primary_green"
+        android:textColor="#1A1A1A"
         android:text="Continue to App"/>
 
 <!--    <Button-->
@@ -50,5 +51,6 @@
         android:layout_height="wrap_content"
         android:text="@string/view_profile"
         android:backgroundTint="@color/primary_green"
+        android:textColor="#1A1A1A"
         android:layout_marginTop="12dp" />
 </LinearLayout>

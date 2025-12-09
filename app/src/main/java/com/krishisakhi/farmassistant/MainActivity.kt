@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         speechToTextConverter = SpeechToTextConverter(this)
         enhancedAIService = EnhancedAIService(this, BuildConfig.GEMINI_API_KEY)
         textToSpeechPlayer = TextToSpeechPlayer(this)
+        KrishiSakhiApplication.textToSpeechPlayer = textToSpeechPlayer
         textToSpeechPlayer?.initialize {
             Log.d(TAG, "Text-to-Speech initialized")
         }
@@ -321,6 +322,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (textToSpeechPlayer == null) {
             textToSpeechPlayer = TextToSpeechPlayer(this)
+            KrishiSakhiApplication.textToSpeechPlayer = textToSpeechPlayer
             textToSpeechPlayer?.initialize {
                 android.util.Log.d("MainActivity", "Text-to-Speech initialized")
             }

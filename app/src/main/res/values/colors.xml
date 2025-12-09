@@ -4,6 +4,7 @@
     <color name="primary_green">#00D66C</color>
     <color name="dark_background">#F5F5F0</color>
     <color name="card_background">#F5F5F0</color>
+    <color name="primary_red">#FF4C4C</color>
 
     <!-- Text Colors -->
     <color name="text_header">#9B4444</color>
