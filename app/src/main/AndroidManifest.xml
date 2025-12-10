@@ -73,6 +73,11 @@
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
+        <!-- Farmer Profile Editor for personalization -->
+        <activity
+            android:name=".FarmerProfileEditorActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

@@ -242,47 +242,53 @@
 
         </GridLayout>
 
-        <!-- Advisory Highlights -->
+        <!-- Personalization Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="@string/advisory_highlights"
+            android:text="My Personalization"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- Farmer Profile Button -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/farmerProfileCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
             app:cardBackgroundColor="#1A1A1A"
             app:cardCornerRadius="12dp"
-            app:cardElevation="0dp">
+            app:cardElevation="0dp"
+            app:strokeColor="@color/primary_green"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:background="@color/primary_green"
-                    android:contentDescription="@string/rain_advisory"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_rain" />
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:contentDescription="Farmer Profile"
+                    android:src="@drawable/ic_profile"
+                    app:tint="@color/primary_green" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/rain_advisory_title"
+                        android:text="My Farmer Profile"
                         android:textColor="#FFFFFF"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -291,10 +297,76 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@string/rain_advisory_desc"
+                        android:text="Edit your farming information"
                         android:textColor="#9CA3AF"
                         android:textSize="14sp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="Go to profile"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="#9CA3AF" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Farmer Insights Button -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/farmerInsightsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#1A1A1A"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/primary_green"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:contentDescription="Farmer Insights"
+                    android:src="@drawable/ic_lightbulb"
+                    app:tint="@color/primary_green" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AI Insights"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="View AI-generated farming insights"
+                        android:textColor="#9CA3AF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="Go to insights"
+                    android:src="@drawable/ic_arrow_forward"
+                    app:tint="#9CA3AF" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

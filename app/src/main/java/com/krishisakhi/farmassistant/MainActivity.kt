@@ -217,6 +217,17 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, GovtSchemeActivity::class.java)
             startActivity(intent)
         }
+
+        // Farmer Profile button
+        findViewById<MaterialCardView>(R.id.farmerProfileCard).setOnClickListener {
+            val intent = Intent(this, FarmerProfileEditorActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Farmer Insights button
+        findViewById<MaterialCardView>(R.id.farmerInsightsCard).setOnClickListener {
+            showFarmerInsightsDialog()
+        }
     }
 
     private fun showAskQuestionDialog() {
@@ -481,6 +492,42 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         builder.show()
+    }
+
+    private fun showFarmerInsightsDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_farmer_insights)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setDimAmount(0.7f)
+
+        val insightsTextView = dialog.findViewById<TextView>(R.id.insightsTextView)
+        val closeButton = dialog.findViewById<Button>(R.id.closeButton)
+
+        // Load insights from InsightsFileManager
+        lifecycleScope.launch {
+            try {
+                val insightsManager = enhancedAIService?.getInsightsFileManager()
+                val insights = withContext(Dispatchers.IO) {
+                    insightsManager?.readInsights() ?: ""
+                }
+
+                if (insights.isEmpty()) {
+                    insightsTextView.text = "No insights yet.\n\nKeep asking questions and the AI will learn about your farming practices and generate personalized insights!"
+                } else {
+                    insightsTextView.text = insights
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading insights", e)
+                insightsTextView.text = "Error loading insights. Please try again later."
+            }
+        }
+
+        closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     override fun onDestroy() {
