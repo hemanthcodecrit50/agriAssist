@@ -51,8 +51,6 @@ class GovtSchemeActivity : AppCompatActivity() {
     private fun initializeViews() {
         headerIcon = findViewById(R.id.headerIcon)
         headerTitle = findViewById(R.id.headerTitle)
-        filterCard = findViewById(R.id.filterCard)
-        searchInput = findViewById(R.id.searchInput)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         recyclerView = findViewById(R.id.recyclerView)
         emptyStateLayout = findViewById(R.id.emptyStateLayout)

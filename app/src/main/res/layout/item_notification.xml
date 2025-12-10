@@ -49,12 +49,6 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_chevron_right"
-            android:contentDescription="@string/view_details" />
-
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
