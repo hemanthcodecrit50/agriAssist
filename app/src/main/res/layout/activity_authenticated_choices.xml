@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,16 +9,23 @@
     android:gravity="center_vertical">
 
     <!-- App Logo -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="94dp"
+        android:layout_height="94dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center">
     <ImageView
         android:id="@+id/ivAppLogo"
         android:layout_width="96dp"
         android:layout_height="94dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_krishisakhi_foreground" />
+        android:src="@drawable/ic_logo" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tvSignedInAs"
@@ -29,28 +37,52 @@
         android:gravity="center"
         android:paddingBottom="16dp" />
 
-    <Button
-        android:id="@+id/btnContinue"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/primary_green"
-        android:textColor="#1A1A1A"
-        android:text="Continue to App"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:spacing="12dp">
 
-<!--    <Button-->
-<!--        android:id="@+id/btnRegister"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/update_profile"-->
-<!--        android:backgroundTint="@color/primary_green"-->
-<!--        android:layout_marginTop="12dp" />-->
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/primary_green"
+            android:textColor="#1A1A1A"
+            android:text="Continue to App"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:elevation="4dp"
+            app:cornerRadius="12dp"
+            android:stateListAnimator="@null"/>
 
-    <Button
-        android:id="@+id/btnProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/view_profile"
-        android:backgroundTint="@color/primary_green"
-        android:textColor="#1A1A1A"
-        android:layout_marginTop="12dp" />
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="0dp" />
+
+        <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/view_profile"
+            android:backgroundTint="@color/primary_green"
+            android:textColor="#1A1A1A"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            app:cornerRadius="12dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:elevation="4dp"
+            android:stateListAnimator="@null"/>
+    </LinearLayout>
 </LinearLayout>

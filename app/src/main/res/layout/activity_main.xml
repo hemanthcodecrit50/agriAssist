@@ -261,7 +261,7 @@
             app:cardBackgroundColor="#1A1A1A"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:strokeColor="@color/primary_green"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -320,7 +320,7 @@
             app:cardBackgroundColor="#1A1A1A"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:strokeColor="@color/primary_green"
+            app:strokeColor="@color/white"
             app:strokeWidth="1dp">
 
             <LinearLayout

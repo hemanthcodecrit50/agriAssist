@@ -56,8 +56,6 @@ class MarketPricesActivity : AppCompatActivity() {
     private fun initializeViews() {
         headerIcon = findViewById(R.id.headerIcon)
         headerTitle = findViewById(R.id.headerTitle)
-        filterCard = findViewById(R.id.filterCard)
-        searchInput = findViewById(R.id.searchInput)
         loadingIndicator = findViewById(R.id.loadingIndicator)
         recyclerView = findViewById(R.id.recyclerView)
         emptyStateLayout = findViewById(R.id.emptyStateLayout)
@@ -69,13 +67,13 @@ class MarketPricesActivity : AppCompatActivity() {
         emptyStateText.text = "No market prices available"
 
         // When user submits a search, query using that commodity and the saved state (if any)
-        searchInput.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
-                val query = v.text?.toString()?.trim()
-                loadData(query)
-                true
-            } else false
-        }
+//        searchInput.setOnEditorActionListener { v, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+//                val query = v.text?.toString()?.trim()
+//                loadData(query)
+//                true
+//            } else false
+//        }
     }
 
     private fun setupRecyclerView() {

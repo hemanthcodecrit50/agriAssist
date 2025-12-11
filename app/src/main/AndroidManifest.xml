@@ -69,11 +69,6 @@
             android:name=".AIResponseActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
-        <!-- New registration screen for email/password sign-up -->
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <!-- Farmer Profile Editor for personalization -->
         <activity
             android:name=".FarmerProfileEditorActivity"
             android:exported="false"
