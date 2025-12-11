@@ -4,7 +4,7 @@
     <!-- Header Section -->
     <string name="app_logo">App Logo</string>
     <string name="welcome_message">Namaste,</string>
-    <string name="user_name">Ramesh Kumar</string>
+    <string name="user_name">user</string>
     <string name="profile">Profile</string>
 
     <!-- Main Actions -->

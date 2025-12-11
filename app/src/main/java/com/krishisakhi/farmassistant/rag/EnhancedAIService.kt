@@ -36,7 +36,7 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
 
     companion object {
         private const val TAG = "EnhancedAIService"
-        private const val MODEL_NAME = "gemini-2.0-flash-exp"
+        private const val MODEL_NAME = "gemini-2.5-flash"
         private const val TOP_K = 3 // Top 3 semantic chunks only
         private const val MIN_SIMILARITY_SCORE = 0.3f
         private const val PROFILE_BOOST = 1.2f // Boost profile chunks by 20%
@@ -284,6 +284,8 @@ class EnhancedAIService(private val context: Context, private val apiKey: String
             SYSTEM INSTRUCTIONS:
             - Provide accurate, practical farming advice
             - Use the context to personalize responses
+            - Reply in English only
+            - if username is known, address them respectfully, else use "Dear Farmer"
             - Tailor advice to farmer's specific crops, soil, location if available
             - Keep responses concise (150-250 words)
             - Use simple language
